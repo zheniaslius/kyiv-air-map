@@ -1,0 +1,884 @@
+[
+{
+"id": "UA01020000000022387",
+"name": "Бахчисарайський район",
+"name_en": "Bakhchysarai Raion",
+"oblast": "UA01"
+},
+{
+"id": "UA01040000000069938",
+"name": "Білогірський район",
+"name_en": "Belogorsk Raion",
+"oblast": "UA01"
+},
+{
+"id": "UA01060000000028159",
+"name": "Джанкойський район",
+"name_en": "Dzhankoy Raion",
+"oblast": "UA01"
+},
+{
+"id": "UA01080000000090798",
+"name": "Євпаторійський район",
+"name_en": null,
+"oblast": "UA01"
+},
+{
+"id": "UA01100000000047924",
+"name": "Керченський район",
+"name_en": null,
+"oblast": "UA01"
+},
+{
+"id": "UA01120000000061837",
+"name": "Курманський район",
+"name_en": null,
+"oblast": "UA01"
+},
+{
+"id": "UA01140000000010124",
+"name": "Перекопський район",
+"name_en": null,
+"oblast": "UA01"
+},
+{
+"id": "UA01160000000090126",
+"name": "Сімферопольський район",
+"name_en": "Simferopol District",
+"oblast": "UA01"
+},
+{
+"id": "UA01180000000068971",
+"name": "Феодосійський район",
+"name_en": null,
+"oblast": "UA01"
+},
+{
+"id": "UA01200000000063976",
+"name": "Ялтинський район",
+"name_en": null,
+"oblast": "UA01"
+},
+{
+"id": "UA05020000000026686",
+"name": "Вінницький район",
+"name_en": "Vinnytsia Raion",
+"oblast": "UA05"
+},
+{
+"id": "UA05040000000050292",
+"name": "Гайсинський район",
+"name_en": "Haisyn Raion",
+"oblast": "UA05"
+},
+{
+"id": "UA05060000000061926",
+"name": "Жмеринський район",
+"name_en": "Zhmerynka Raion",
+"oblast": "UA05"
+},
+{
+"id": "UA05080000000040234",
+"name": "Могилів-Подільський район",
+"name_en": "Mohyliv-Podilskyi Raion",
+"oblast": "UA05"
+},
+{
+"id": "UA05100000000022396",
+"name": "Тульчинський район",
+"name_en": "Tulchyn Raion",
+"oblast": "UA05"
+},
+{
+"id": "UA05120000000017020",
+"name": "Хмільницький район",
+"name_en": "Khmilnyk Raion",
+"oblast": "UA05"
+},
+{
+"id": "UA07020000000048211",
+"name": "Володимирський район",
+"name_en": "Volodymyr Raion",
+"oblast": "UA07"
+},
+{
+"id": "UA07040000000026412",
+"name": "Камінь-Каширський район",
+"name_en": "Kamin-Kashyrskyi Raion",
+"oblast": "UA07"
+},
+{
+"id": "UA07060000000092268",
+"name": "Ковельський район",
+"name_en": "Kovel Raion",
+"oblast": "UA07"
+},
+{
+"id": "UA07080000000034745",
+"name": "Луцький район",
+"name_en": "Lutsk Raion",
+"oblast": "UA07"
+},
+{
+"id": "UA12020000000052809",
+"name": "Дніпровський район",
+"name_en": "Dnipro Raion",
+"oblast": "UA12"
+},
+{
+"id": "UA12040000000032213",
+"name": "Кам'янський район",
+"name_en": "Kamianskyi raion",
+"oblast": "UA12"
+},
+{
+"id": "UA12060000000022633",
+"name": "Криворізький район",
+"name_en": "Kryvyi Rih Raion",
+"oblast": "UA12"
+},
+{
+"id": "UA12080000000023578",
+"name": "Нікопольський район",
+"name_en": "Nikopol Raion",
+"oblast": "UA12"
+},
+{
+"id": "UA12100000000039307",
+"name": "Самарівський район",
+"name_en": "Samar Raion",
+"oblast": "UA12"
+},
+{
+"id": "UA12120000000089862",
+"name": "Павлоградський район",
+"name_en": "Pavlohrad Raion",
+"oblast": "UA12"
+},
+{
+"id": "UA12140000000011720",
+"name": "Синельниківський район",
+"name_en": "Synelnykove Raion",
+"oblast": "UA12"
+},
+{
+"id": "UA14020000000013572",
+"name": "Бахмутський район",
+"name_en": "Bakhmut Raion",
+"oblast": "UA14"
+},
+{
+"id": "UA14040000000098211",
+"name": "Волноваський район",
+"name_en": "Volnovakha Raion",
+"oblast": "UA14"
+},
+{
+"id": "UA14060000000024357",
+"name": "Горлівський район",
+"name_en": null,
+"oblast": "UA14"
+},
+{
+"id": "UA14080000000098686",
+"name": "Донецький район",
+"name_en": null,
+"oblast": "UA14"
+},
+{
+"id": "UA14100000000010319",
+"name": "Кальміуський район",
+"name_en": null,
+"oblast": "UA14"
+},
+{
+"id": "UA14120000000070232",
+"name": "Краматорський район",
+"name_en": "Kramatorsk Raion",
+"oblast": "UA14"
+},
+{
+"id": "UA14140000000070889",
+"name": "Маріупольський район",
+"name_en": "Mariupol Raion",
+"oblast": "UA14"
+},
+{
+"id": "UA14160000000061982",
+"name": "Покровський район",
+"name_en": "Pokrovskii Raion",
+"oblast": "UA14"
+},
+{
+"id": "UA18020000000072859",
+"name": "Бердичівський район",
+"name_en": "Berdychiv Raion",
+"oblast": "UA18"
+},
+{
+"id": "UA18040000000058965",
+"name": "Житомирський район",
+"name_en": "Zhytomyr Raion",
+"oblast": "UA18"
+},
+{
+"id": "UA18060000000021754",
+"name": "Коростенський район",
+"name_en": "Korosten Raion",
+"oblast": "UA18"
+},
+{
+"id": "UA18080000000016657",
+"name": "Звягельський район",
+"name_en": "Zviahel Raion",
+"oblast": "UA18"
+},
+{
+"id": "UA21020000000051405",
+"name": "Берегівський район",
+"name_en": "Berehove Raion",
+"oblast": "UA21"
+},
+{
+"id": "UA21040000000077329",
+"name": "Мукачівський район",
+"name_en": "Mukachevo Raion",
+"oblast": "UA21"
+},
+{
+"id": "UA21060000000059475",
+"name": "Рахівський район",
+"name_en": "Rakhiv Raion",
+"oblast": "UA21"
+},
+{
+"id": "UA21080000000048851",
+"name": "Тячівський район",
+"name_en": "Tiachiv Raion",
+"oblast": "UA21"
+},
+{
+"id": "UA21100000000055073",
+"name": "Ужгородський район",
+"name_en": "Uzhhorod Raion",
+"oblast": "UA21"
+},
+{
+"id": "UA21120000000022889",
+"name": "Хустський район",
+"name_en": "Khust Raion",
+"oblast": "UA21"
+},
+{
+"id": "UA23020000000032289",
+"name": "Бердянський район",
+"name_en": "Berdyansk Raion",
+"oblast": "UA23"
+},
+{
+"id": "UA23040000000067730",
+"name": "Василівський район",
+"name_en": "Vasylivka Raion",
+"oblast": "UA23"
+},
+{
+"id": "UA23060000000070350",
+"name": "Запорізький район",
+"name_en": "Zaporizhia Raion",
+"oblast": "UA23"
+},
+{
+"id": "UA23080000000090746",
+"name": "Мелітопольський район",
+"name_en": "Melitopol Raion",
+"oblast": "UA23"
+},
+{
+"id": "UA23100000000034132",
+"name": "Пологівський район",
+"name_en": "Polohy Raion",
+"oblast": "UA23"
+},
+{
+"id": "UA26020000000044654",
+"name": "Верховинський район",
+"name_en": "Verkhovyna Raion",
+"oblast": "UA26"
+},
+{
+"id": "UA26040000000044761",
+"name": "Івано-Франківський район",
+"name_en": "Ivano-Frankivsk Raion",
+"oblast": "UA26"
+},
+{
+"id": "UA26060000000042554",
+"name": "Калуський район",
+"name_en": "Kalush Raion",
+"oblast": "UA26"
+},
+{
+"id": "UA26080000000050130",
+"name": "Коломийський район",
+"name_en": "Kolomyia Raion",
+"oblast": "UA26"
+},
+{
+"id": "UA26100000000092255",
+"name": "Косівський район",
+"name_en": "Kosiv Raion",
+"oblast": "UA26"
+},
+{
+"id": "UA26120000000036058",
+"name": "Надвірнянський район",
+"name_en": "Nadvirna Raion",
+"oblast": "UA26"
+},
+{
+"id": "UA32020000000057002",
+"name": "Білоцерківський район",
+"name_en": "Bila Tserkva Raion",
+"oblast": "UA32"
+},
+{
+"id": "UA32040000000054694",
+"name": "Бориспільський район",
+"name_en": "Boryspil Raion",
+"oblast": "UA32"
+},
+{
+"id": "UA32060000000012455",
+"name": "Броварський район",
+"name_en": "Brovary Raion",
+"oblast": "UA32"
+},
+{
+"id": "UA32080000000084076",
+"name": "Бучанський район",
+"name_en": "Bucha district",
+"oblast": "UA32"
+},
+{
+"id": "UA32100000000065867",
+"name": "Вишгородський район",
+"name_en": "Vyshhorod Raion",
+"oblast": "UA32"
+},
+{
+"id": "UA32120000000081110",
+"name": "Обухівський район",
+"name_en": "Obukhiv Raion",
+"oblast": "UA32"
+},
+{
+"id": "UA32140000000020217",
+"name": "Фастівський район",
+"name_en": "Fastiv Raion",
+"oblast": "UA32"
+},
+{
+"id": "UA35020000000074289",
+"name": "Голованівський район",
+"name_en": "Holovanivsk Raion",
+"oblast": "UA35"
+},
+{
+"id": "UA35040000000034705",
+"name": "Кропивницький район",
+"name_en": "Kropyvnytskyi Raion",
+"oblast": "UA35"
+},
+{
+"id": "UA35060000000086172",
+"name": "Новоукраїнський район",
+"name_en": "Novoukrainka Raion",
+"oblast": "UA35"
+},
+{
+"id": "UA35080000000062763",
+"name": "Олександрійський район",
+"name_en": "Oleksandriia Raion",
+"oblast": "UA35"
+},
+{
+"id": "UA44020000000082097",
+"name": "Алчевський район",
+"name_en": null,
+"oblast": "UA44"
+},
+{
+"id": "UA44040000000032820",
+"name": "Довжанський район",
+"name_en": null,
+"oblast": "UA44"
+},
+{
+"id": "UA44060000000048093",
+"name": "Луганський район",
+"name_en": null,
+"oblast": "UA44"
+},
+{
+"id": "UA44080000000045512",
+"name": "Ровеньківський район",
+"name_en": null,
+"oblast": "UA44"
+},
+{
+"id": "UA44100000000052765",
+"name": "Сватівський район",
+"name_en": "Svatove Raion",
+"oblast": "UA44"
+},
+{
+"id": "UA44120000000092852",
+"name": "Сіверськодонецький район",
+"name_en": "Siverskodonetsk Raion",
+"oblast": "UA44"
+},
+{
+"id": "UA44140000000031142",
+"name": "Старобільський район",
+"name_en": "Starobilsk Raion",
+"oblast": "UA44"
+},
+{
+"id": "UA44160000000057142",
+"name": "Щастинський район",
+"name_en": "Shchastia Raion",
+"oblast": "UA44"
+},
+{
+"id": "UA46020000000075920",
+"name": "Дрогобицький район",
+"name_en": "Drohobych Raion",
+"oblast": "UA46"
+},
+{
+"id": "UA46040000000069196",
+"name": "Золочівський район",
+"name_en": "Zolochiv Raion",
+"oblast": "UA46"
+},
+{
+"id": "UA46060000000042587",
+"name": "Львівський район",
+"name_en": "Lviv Raion",
+"oblast": "UA46"
+},
+{
+"id": "UA46080000000017237",
+"name": "Самбірський район",
+"name_en": "Sambir Raion",
+"oblast": "UA46"
+},
+{
+"id": "UA46100000000023056",
+"name": "Стрийський район",
+"name_en": "Stryi Raion",
+"oblast": "UA46"
+},
+{
+"id": "UA46120000000057093",
+"name": "Шептицький район",
+"name_en": "Sheptytskyi Raion",
+"oblast": "UA46"
+},
+{
+"id": "UA46140000000036328",
+"name": "Яворівський район",
+"name_en": "Yavoriv Raion",
+"oblast": "UA46"
+},
+{
+"id": "UA48020000000033544",
+"name": "Баштанський район",
+"name_en": "Bashtanka Raion",
+"oblast": "UA48"
+},
+{
+"id": "UA48040000000011780",
+"name": "Вознесенський район",
+"name_en": "Voznesensk Raion",
+"oblast": "UA48"
+},
+{
+"id": "UA48060000000094390",
+"name": "Миколаївський район",
+"name_en": "Mykolaiv Raion",
+"oblast": "UA48"
+},
+{
+"id": "UA48080000000082320",
+"name": "Первомайський район",
+"name_en": "Pervomaisk Raion",
+"oblast": "UA48"
+},
+{
+"id": "UA51020000000097683",
+"name": "Березівський район",
+"name_en": "Berezivka Raion",
+"oblast": "UA51"
+},
+{
+"id": "UA51040000000032911",
+"name": "Білгород-Дністровський район",
+"name_en": "Bilhorod-Dnistrovskyi Raion",
+"oblast": "UA51"
+},
+{
+"id": "UA51060000000057808",
+"name": "Болградський район",
+"name_en": "Bolhrad Raion",
+"oblast": "UA51"
+},
+{
+"id": "UA51080000000061776",
+"name": "Ізмаїльський район",
+"name_en": "Izmail Raion",
+"oblast": "UA51"
+},
+{
+"id": "UA51100000000095786",
+"name": "Одеський район",
+"name_en": "Odesa Raion",
+"oblast": "UA51"
+},
+{
+"id": "UA51120000000021678",
+"name": "Подільський район",
+"name_en": "Podilsk Raion",
+"oblast": "UA51"
+},
+{
+"id": "UA51140000000094970",
+"name": "Роздільнянський район",
+"name_en": "Rozdilna Raion",
+"oblast": "UA51"
+},
+{
+"id": "UA53020000000034761",
+"name": "Кременчуцький район",
+"name_en": "Kremenchuk Raion",
+"oblast": "UA53"
+},
+{
+"id": "UA53040000000081308",
+"name": "Лубенський район",
+"name_en": "Lubny Raion",
+"oblast": "UA53"
+},
+{
+"id": "UA53060000000045271",
+"name": "Миргородський район",
+"name_en": "Myrhorod Raion",
+"oblast": "UA53"
+},
+{
+"id": "UA53080000000068029",
+"name": "Полтавський район",
+"name_en": "Poltava Raion",
+"oblast": "UA53"
+},
+{
+"id": "UA56020000000011586",
+"name": "Вараський район",
+"name_en": "Varash Raion",
+"oblast": "UA56"
+},
+{
+"id": "UA56040000000062179",
+"name": "Дубенський район",
+"name_en": "Dubno Raion",
+"oblast": "UA56"
+},
+{
+"id": "UA56060000000041446",
+"name": "Рівненський район",
+"name_en": "Rivne Raion",
+"oblast": "UA56"
+},
+{
+"id": "UA56080000000096146",
+"name": "Сарненський район",
+"name_en": "Sarny Raion",
+"oblast": "UA56"
+},
+{
+"id": "UA59020000000081905",
+"name": "Конотопський район",
+"name_en": "Konotop Raion",
+"oblast": "UA59"
+},
+{
+"id": "UA59040000000045652",
+"name": "Охтирський район",
+"name_en": "Okhtyrka Raion",
+"oblast": "UA59"
+},
+{
+"id": "UA59060000000086008",
+"name": "Роменський район",
+"name_en": "Romny Raion",
+"oblast": "UA59"
+},
+{
+"id": "UA59080000000057897",
+"name": "Сумський район",
+"name_en": "Sumy Raion",
+"oblast": "UA59"
+},
+{
+"id": "UA59100000000036457",
+"name": "Шосткинський район",
+"name_en": "Shostka Raion",
+"oblast": "UA59"
+},
+{
+"id": "UA61020000000016944",
+"name": "Кременецький район",
+"name_en": "Kremenets Raion",
+"oblast": "UA61"
+},
+{
+"id": "UA61040000000090285",
+"name": "Тернопільський район",
+"name_en": "Ternopil Raion",
+"oblast": "UA61"
+},
+{
+"id": "UA61060000000068766",
+"name": "Чортківський район",
+"name_en": "Chortkiv Raion",
+"oblast": "UA61"
+},
+{
+"id": "UA63020000000066931",
+"name": "Богодухівський район",
+"name_en": "Bohodukhiv Raion",
+"oblast": "UA63"
+},
+{
+"id": "UA63040000000023521",
+"name": "Ізюмський район",
+"name_en": "Izium Raion",
+"oblast": "UA63"
+},
+{
+"id": "UA63060000000053698",
+"name": "Берестинський район",
+"name_en": "Berestyn Raion",
+"oblast": "UA63"
+},
+{
+"id": "UA63080000000032022",
+"name": "Куп’янський район",
+"name_en": "Kupiansk Raion",
+"oblast": "UA63"
+},
+{
+"id": "UA63100000000059237",
+"name": "Лозівський район",
+"name_en": "Lozova Raion",
+"oblast": "UA63"
+},
+{
+"id": "UA63120000000091135",
+"name": "Харківський район",
+"name_en": "Kharkiv Raion",
+"oblast": "UA63"
+},
+{
+"id": "UA63140000000096278",
+"name": "Чугуївський район",
+"name_en": "Chuhuiv Raion",
+"oblast": "UA63"
+},
+{
+"id": "UA65020000000032929",
+"name": "Бериславський район",
+"name_en": "Beryslav Raion",
+"oblast": "UA65"
+},
+{
+"id": "UA65040000000088940",
+"name": "Генічеський район",
+"name_en": "Henichesk Raion",
+"oblast": "UA65"
+},
+{
+"id": "UA65060000000061947",
+"name": "Каховський район",
+"name_en": "Kakhovka Raion",
+"oblast": "UA65"
+},
+{
+"id": "UA65080000000090947",
+"name": "Скадовський район",
+"name_en": "Skadovsk Raion",
+"oblast": "UA65"
+},
+{
+"id": "UA65100000000029736",
+"name": "Херсонський район",
+"name_en": "Kherson Raion",
+"oblast": "UA65"
+},
+{
+"id": "UA68020000000016021",
+"name": "Кам’янець-Подільський район",
+"name_en": "Kamianets-Podilskyi Raion",
+"oblast": "UA68"
+},
+{
+"id": "UA68040000000086061",
+"name": "Хмельницький район",
+"name_en": "Khmelnytskyi Raion",
+"oblast": "UA68"
+},
+{
+"id": "UA68060000000040570",
+"name": "Шепетівський район",
+"name_en": "Shepetivka Raion",
+"oblast": "UA68"
+},
+{
+"id": "UA71020000000057292",
+"name": "Звенигородський район",
+"name_en": "Zvenyhorodka Raion",
+"oblast": "UA71"
+},
+{
+"id": "UA71040000000022553",
+"name": "Золотоніський район",
+"name_en": "Zolotonosha Raion",
+"oblast": "UA71"
+},
+{
+"id": "UA71060000000030325",
+"name": "Уманський район",
+"name_en": "Uman Raion",
+"oblast": "UA71"
+},
+{
+"id": "UA71080000000036344",
+"name": "Черкаський район",
+"name_en": "Cherkasy Raion",
+"oblast": "UA71"
+},
+{
+"id": "UA73020000000038148",
+"name": "Вижницький район",
+"name_en": "Vyzhnytsia Raion",
+"oblast": "UA73"
+},
+{
+"id": "UA73040000000031528",
+"name": "Дністровський район",
+"name_en": "Dnistrovskyi Raion",
+"oblast": "UA73"
+},
+{
+"id": "UA73060000000061247",
+"name": "Чернівецький район",
+"name_en": "Chernivtsi Raion",
+"oblast": "UA73"
+},
+{
+"id": "UA74020000000089267",
+"name": "Корюківський район",
+"name_en": "Koriukivka Raion",
+"oblast": "UA74"
+},
+{
+"id": "UA74040000000028062",
+"name": "Ніжинський район",
+"name_en": "Nizhyn Raion",
+"oblast": "UA74"
+},
+{
+"id": "UA74060000000063946",
+"name": "Новгород-Сіверський район",
+"name_en": "Novhorod-Siverskyi Raion",
+"oblast": "UA74"
+},
+{
+"id": "UA74080000000030554",
+"name": "Прилуцький район",
+"name_en": "Pryluky Raion",
+"oblast": "UA74"
+},
+{
+"id": "UA74100000000047140",
+"name": "Чернігівський район",
+"name_en": "Chernihiv Raion",
+"oblast": "UA74"
+},
+{
+"id": "UA85000000000065278",
+"name": "Севастополь",
+"name_en": "Sevastopol",
+"oblast": "UA85"
+},
+{
+"id": "UA80000000000126643",
+"name": "Голосіївський район",
+"name_en": null,
+"oblast": "UA80"
+},
+{
+"id": "UA80000000000980793",
+"name": "Солом'янський район",
+"name_en": null,
+"oblast": "UA80"
+},
+{
+"id": "UA80000000000875983",
+"name": "Святошинський район",
+"name_en": null,
+"oblast": "UA80"
+},
+{
+"id": "UA80000000000210193",
+"name": "Дарницький район",
+"name_en": null,
+"oblast": "UA80"
+},
+{
+"id": "UA80000000000479391",
+"name": "Дніпровський район",
+"name_en": null,
+"oblast": "UA80"
+},
+{
+"id": "UA80000000000336424",
+"name": "Деснянський район",
+"name_en": null,
+"oblast": "UA80"
+},
+{
+"id": "UA80000000000551439",
+"name": "Оболонський район",
+"name_en": null,
+"oblast": "UA80"
+},
+{
+"id": "UA80000000000719633",
+"name": "Подільський район",
+"name_en": null,
+"oblast": "UA80"
+},
+{
+"id": "UA80000000000624772",
+"name": "Печерський район",
+"name_en": null,
+"oblast": "UA80"
+},
+{
+"id": "UA80000000001078669",
+"name": "Шевченківський район",
+"name_en": null,
+"oblast": "UA80"
+}
+]

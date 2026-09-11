@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>Повітряні цілі по районах</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<style>
+  :root {
+    --bg:#f4f5f7; --card:#ffffff; --line:#e3e6ea; --text:#1f2933; --muted:#6b7480;
+    --accent:#e5484d; --ok:#30a46c; --shadow:0 4px 20px rgba(20,30,50,.08);
+  }
+  html, body { margin:0; height:100%; background:var(--bg); color:var(--text);
+               font:14px/1.5 -apple-system, "Segoe UI", Inter, Roboto, system-ui, sans-serif; }
+  #map { position:absolute; inset:0; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); }
+  #panel { position:absolute; top:16px; left:16px; z-index:2; width:272px; padding:16px 18px; }
+  #panel h1 { font-size:16px; font-weight:600; margin:0 0 2px; letter-spacing:-.01em; }
+  #panel .sub { color:var(--muted); font-size:12.5px; margin-bottom:8px; }
+  #scope { display:flex; align-items:center; gap:8px; margin-bottom:12px; padding:7px 10px; border-radius:9px;
+           background:#f4f5f7; border:1px solid var(--line); font-size:12.5px; }
+  #scope .pill { background:var(--text); color:#fff; border-radius:999px; padding:1px 8px; font-size:11.5px; font-weight:600; }
+  #scope .soon { color:var(--muted); }
+  .soon-tag { display:inline-block; background:#eef0f3; color:var(--muted); border-radius:999px; padding:1px 8px; font-size:11px; font-weight:600; letter-spacing:.03em; text-transform:uppercase; }
+  .row { display:flex; justify-content:space-between; align-items:center; gap:8px; margin:5px 0; font-size:13px; }
+  .muted { color:var(--muted); }
+  .dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--ok); margin-right:6px; }
+  .dot.stale { background:#d29922; }
+  #legend { display:flex; align-items:center; gap:8px; margin:12px 0 4px; font-size:12px; color:var(--muted); }
+  #legend .bar { flex:1; height:8px; border-radius:4px; background:linear-gradient(90deg, #f1e3e3 0%, var(--accent) 100%); }
+  input[type=range] { width:100%; accent-color:var(--accent); margin:6px 0 2px; }
+  .hint { color:var(--muted); font-size:11.5px; }
+  .btn { background:#f4f5f7; border:1px solid var(--line); color:var(--text); border-radius:8px; padding:5px 10px; cursor:pointer; font:inherit; font-size:12.5px; }
+  .btn:hover { background:#eceef1; }
+  .toggles { display:flex; gap:12px; margin-top:10px; font-size:12.5px; color:var(--muted); }
+  .toggles label { display:flex; align-items:center; gap:5px; cursor:pointer; }
+  #feed { position:absolute; right:16px; top:16px; z-index:2; width:300px; max-height:calc(100% - 32px); overflow:auto; padding:10px 14px; }
+  #feed h2 { font-size:12px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin:4px 0 6px; }
+  #feed .item { padding:7px 0; border-top:1px solid var(--line); font-size:13px; white-space:pre-wrap; }
+  #feed .item:first-of-type { border-top:none; }
+  #feed .meta { color:var(--muted); font-size:11.5px; display:flex; gap:6px; align-items:center; }
+  #feed .k { display:inline-block; width:7px; height:7px; border-radius:50%; }
+  .maplibregl-popup-content { background:var(--card); color:var(--text); border-radius:10px; box-shadow:var(--shadow); font-size:12.5px; max-width:280px; padding:10px 12px; }
+  .maplibregl-popup-tip { border-top-color:var(--card) !important; }
+  .maplibregl-ctrl-group { border-radius:10px !important; box-shadow:var(--shadow) !important; }
+  #about { position:absolute; inset:0; z-index:5; background:rgba(30,40,55,.35); display:flex; align-items:center; justify-content:center; padding:16px; }
+  #about[hidden] { display:none; }
+  #about .card { max-width:420px; padding:20px 22px; font-size:14px; }
+  #about h2 { font-size:16px; margin:0 0 10px; }
+  #about p { margin:8px 0; }
+  #about .foot { display:flex; justify-content:flex-end; margin-top:12px; }
+  @media (max-width:800px) { #feed { display:none; } #panel { width:auto; right:16px; } }
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<div id="panel" class="card">
+  <h1>Повітряні цілі по районах</h1>
+  <div class="sub">за повідомленнями <span id="src">@war_monitor</span></div>
+  <div id="scope"><span class="pill" id="scopeName">Київ</span><span class="soon">інші міста — незабаром</span></div>
+  <div class="row"><span class="muted">Останнє повідомлення</span><span id="lastmsg">—</span></div>
+  <div class="row"><span class="muted">Зв'язок</span><span><span class="dot" id="dot"></span><span id="lastpoll">—</span></span></div>
+  <div class="row"><span class="muted">Районів з цілями</span><span id="active">0</span></div>
+  <div id="legend"><span>давно</span><div class="bar"></div><span>щойно</span></div>
+  <div class="row" style="margin-top:8px"><span class="muted">Час</span><span id="tlabel">зараз</span></div>
+  <input type="range" id="slider" min="-180" max="0" value="0" step="1">
+  <div class="hint">Потягніть, щоб переглянути останні 3 години.</div>
+  <div class="toggles">
+    <label><input type="checkbox" id="basemap"> карта</label>
+    <label><input type="checkbox" id="labels" checked> назви</label>
+    <button class="btn" id="aboutBtn" style="margin-left:auto">Як це працює</button>
+  </div>
+</div>
+
+<div id="feed" class="card"><h2>Останні повідомлення</h2><div id="feedItems"></div></div>
+
+<div id="about" hidden><div class="card">
+  <h2>Як це працює</h2>
+  <p>Карта показує, де за повідомленнями каналу <b id="about-src">@war_monitor</b> нещодавно бачили повітряні цілі.</p>
+  <p>Поки що працює лише <b id="about-scope">Київ</b>. Інші міста та області позначені сірим і з'являться незабаром.</p>
+  <p>Район стає <b style="color:var(--accent)">червоним</b>, коли про нього пишуть, і поступово блідне сам: дрони — приблизно за годину, ракети — за півгодини.</p>
+  <p>Після «чисто» або «відбою» район гасне і ненадовго стає <b style="color:var(--ok)">зеленим</b>.</p>
+  <p>Наведіть курсор на район, щоб побачити останні повідомлення. Повзунок «Час» відмотує назад.</p>
+  <p class="muted">Це не офіційна повітряна тривога, а лише автоматичний перегляд Telegram-каналу. Дані можуть запізнюватись або бути неточними.</p>
+  <div class="foot"><button class="btn" id="aboutClose">Зрозуміло</button></div>
+</div></div>
+
+<script>
+const KIND_COLOR = { jet:'#e5484d', uav:'#e5484d', cruise:'#e07b39', ballistic:'#8e4ec6', bomb:'#d9a21b', clear:'#30a46c' };
+const KIND_NAME = { jet:'реактивний БпЛА', uav:'БпЛА', cruise:'ракета', ballistic:'балістика', bomb:'КАБ', clear:'чисто' };
+let TAU = { jet:15, uav:25, cruise:10, ballistic:8, bomb:8 };
+let events = [];
+const seenIds = new Set();
+let lastTs = null;
+let liveOffsetMin = 0;
+let raionNames = {};
+let featureIds = [];
+let ENABLED = ['UA80'];          // oblast codes users can see; the rest of the map is "coming soon"
+let enabledBounds = null;
+const hadHash = !!location.hash; // a shared #zoom/lat/lng link wins over the default zoom-to-enabled-area
+const isEnabled = id => ENABLED.some(code => id.startsWith(code));
+
+const map = new maplibregl.Map({
+  container: 'map',
+  style: {
+    version: 8,
+    glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
+    sources: {
+      osm: { type:'raster', tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'], tileSize:256, attribution:'© OpenStreetMap' },
+      raions: { type:'geojson', data:'/data/raions.geojson', promoteId:'id' },
+      oblasts: { type:'geojson', data:'/data/oblasts.geojson' },
+    },
+    layers: [
+      { id:'bg', type:'background', paint:{ 'background-color':'#f4f5f7' } },
+      { id:'osm', type:'raster', source:'osm', layout:{ visibility:'none' }, paint:{ 'raster-opacity':0.5, 'raster-saturation':-0.9 } },
+      { id:'raion-base', type:'fill', source:'raions', paint:{ 'fill-color':'#e9ecf0', 'fill-opacity':0.9 } },
+      { id:'raion-fill', type:'fill', source:'raions', paint:{
+          'fill-color': ['case', ['boolean', ['feature-state','cleared'], false], '#30a46c', ['coalesce', ['feature-state','color'], '#e5484d']],
+          'fill-opacity': ['interpolate', ['linear'], ['coalesce', ['feature-state','intensity'], 0], 0, 0, 0.05, 0.12, 1, 0.75] } },
+      { id:'raion-line', type:'line', source:'raions', paint:{ 'line-color':'#ffffff', 'line-width':0.8 } },
+      { id:'oblast-line', type:'line', source:'oblasts', paint:{ 'line-color':'#c3c9d2', 'line-width':1.2 } },
+      { id:'enabled-outline', type:'line', source:'oblasts', filter:['==', ['get','oblast'], ''], paint:{ 'line-color':'#1f2933', 'line-width':1.6 } },
+      { id:'raion-label', type:'symbol', source:'raions', minzoom:6.2, layout:{ 'text-field':['get','name'], 'text-size':10.5, 'text-font':['Open Sans Regular'] },
+        paint:{ 'text-color':'#4b5563', 'text-halo-color':'#f4f5f7', 'text-halo-width':1.2 } },
+    ],
+  },
+  bounds: [[22.0, 44.2], [40.3, 52.4]], fitBoundsOptions: { padding: 20 },
+  hash: true, attributionControl: false,
+});
+map.addControl(new maplibregl.NavigationControl({ showCompass:false }), 'bottom-right');
+map.addControl(new maplibregl.AttributionControl({ compact:true }), 'bottom-left');
+
+document.getElementById('basemap').onchange = e => map.setLayoutProperty('osm', 'visibility', e.target.checked ? 'visible' : 'none');
+document.getElementById('labels').onchange = e => map.setLayoutProperty('raion-label', 'visibility', e.target.checked ? 'visible' : 'none');
+document.getElementById('slider').oninput = e => { liveOffsetMin = +e.target.value; render(); };
+document.getElementById('aboutBtn').onclick = () => document.getElementById('about').hidden = false;
+document.getElementById('aboutClose').onclick = () => document.getElementById('about').hidden = true;
+document.getElementById('about').onclick = e => { if (e.target.id === 'about') e.target.hidden = true; };
+
+// strip the channel's marker emoji (🅿️ ⚠️ 🔄 …) from the start of a message: the type is already shown by the dot
+const clean = t => t.replace(/^[\s\p{Extended_Pictographic}\uFE0F\u200D]+/u, '').replace(/</g, '&lt;');
+const fmtTime = ts => new Date(ts).toLocaleTimeString('uk-UA', { hour:'2-digit', minute:'2-digit' });
+
+async function loadConfig() {
+  const c = await (await fetch('/api/config')).json();
+  TAU = c.tau_min;
+  if (c.enabled_oblasts && c.enabled_oblasts.length) ENABLED = c.enabled_oblasts;
+  document.getElementById('src').textContent = '@' + c.channel;
+  document.getElementById('about-src').textContent = '@' + c.channel;
+  document.getElementById('scopeName').textContent = c.enabled_label || 'Київ';
+  document.getElementById('about-scope').textContent = c.enabled_label || 'Київ';
+}
+function applyEnabled() {
+  const on = ['in', ['get','oblast'], ['literal', ENABLED]];
+  map.setPaintProperty('raion-base', 'fill-color', ['case', on, '#e9ecf0', '#f3f4f6']);
+  map.setPaintProperty('raion-line', 'line-color', ['case', on, '#ffffff', '#fafbfc']);
+  map.setPaintProperty('raion-label', 'text-color', ['case', on, '#4b5563', '#b3b9c2']);
+  map.setFilter('enabled-outline', on);
+  if (enabledBounds && !hadHash) map.fitBounds(enabledBounds, { padding: 40, duration: 0 });
+}
+async function loadGeo() {
+  const g = await (await fetch('/data/raions.geojson')).json();
+  const b = [[Infinity, Infinity], [-Infinity, -Infinity]];
+  for (const f of g.features) {
+    raionNames[f.properties.id] = f.properties.name; featureIds.push(f.properties.id);
+    if (!isEnabled(f.properties.id)) continue;
+    const polys = f.geometry.type === 'MultiPolygon' ? f.geometry.coordinates : [f.geometry.coordinates];
+    for (const poly of polys) for (const [x, y] of poly[0]) {
+      b[0][0] = Math.min(b[0][0], x); b[0][1] = Math.min(b[0][1], y); b[1][0] = Math.max(b[1][0], x); b[1][1] = Math.max(b[1][1], y);
+    }
+  }
+  if (isFinite(b[0][0])) enabledBounds = b;
+}
+async function poll() {
+  try {
+    const url = lastTs ? `/api/events?since=${encodeURIComponent(lastTs)}` : '/api/events?hours=3';
+    const r = await (await fetch(url)).json();
+    let added = 0;
+    for (const e of r.events) if (!seenIds.has(e.id)) { seenIds.add(e.id); events.push(e); added++; }
+    if (added) { events.sort((a,b) => a.ts < b.ts ? -1 : a.ts > b.ts ? 1 : a.id - b.id); renderFeed(); }
+    if (events.length) lastTs = new Date(new Date(events[events.length-1].ts).getTime() - 60000).toISOString();
+    const st = await (await fetch('/api/status')).json();
+    const age = st.last_message_ts ? Math.round((Date.now() - new Date(st.last_message_ts)) / 60000) : null;
+    document.getElementById('lastmsg').textContent = age === null ? '—' : `${fmtTime(st.last_message_ts)} · ${age} хв тому`;
+    const pollAge = st.last_poll ? Math.round((Date.now() - new Date(st.last_poll)) / 1000) : null;
+    const ok = pollAge !== null && pollAge <= 120;
+    document.getElementById('lastpoll').textContent = ok ? 'оновлюється' : 'немає зв\'язку';
+    document.getElementById('dot').className = 'dot' + (ok ? '' : ' stale');
+  } catch (err) { console.warn('poll', err); }
+}
+
+function intensities(now) {
+  const I = {}, color = {}, cleared = {}, clearedAt = {};
+  for (const e of events) if (e.kind === 'clear') { const t = +new Date(e.ts); if (t <= now) clearedAt[e.raion] = Math.max(clearedAt[e.raion] || 0, t); }
+  for (const e of events) {
+    if (e.kind === 'clear' || !isEnabled(e.raion)) continue;
+    const t = +new Date(e.ts);
+    if (t > now || t <= (clearedAt[e.raion] || 0)) continue;
+    const tau = (TAU[e.kind] || 25) * 60000;
+    const cf = Math.min(1 + 0.15 * (e.count - 1), 1.6);
+    const v = e.weight * cf * Math.exp(-(now - t) / tau);
+    if (v < 0.01) continue;
+    I[e.raion] = (I[e.raion] || 0) + v;
+    if (!color[e.raion] || v > color[e.raion].v) color[e.raion] = { v, c: KIND_COLOR[e.kind] || KIND_COLOR.uav };
+  }
+  for (const r in clearedAt) if (!I[r] && now - clearedAt[r] < 10 * 60000) cleared[r] = true;
+  return { I, color, cleared };
+}
+function render() {
+  if (!map.isStyleLoaded() || !featureIds.length) return;
+  const now = Date.now() + liveOffsetMin * 60000;
+  const { I, color, cleared } = intensities(now);
+  let active = 0;
+  for (const id of featureIds) {
+    const v = Math.min(I[id] || 0, 1);
+    if (v > 0.05) active++;
+    map.setFeatureState({ source:'raions', id }, { intensity: v, color: color[id] ? color[id].c : KIND_COLOR.uav, cleared: !!cleared[id] });
+  }
+  document.getElementById('active').textContent = active;
+  document.getElementById('tlabel').textContent = liveOffsetMin === 0 ? 'зараз' : `${fmtTime(now)} · ${-liveOffsetMin} хв тому`;
+}
+function renderFeed() {
+  const byMsg = new Map();
+  for (const e of events) {
+    if (!byMsg.has(e.msg_id)) byMsg.set(e.msg_id, { ts:e.ts, text:e.text, raions:new Set(), kind:e.kind });
+    const m = byMsg.get(e.msg_id);
+    if (e.role === 'city') m.raions.add('Київ'); else if (e.role !== 'area') m.raions.add((raionNames[e.raion] || e.raion).replace(' район', ''));
+  }
+  document.getElementById('feedItems').innerHTML = [...byMsg.values()].slice(-25).reverse().map(m =>
+    `<div class="item"><div class="meta"><span class="k" style="background:${KIND_COLOR[m.kind]}"></span>${fmtTime(m.ts)} · ${KIND_NAME[m.kind] || m.kind} · ${[...m.raions].join(', ')}</div>${clean(m.text)}</div>`).join('');
+}
+
+const popup = new maplibregl.Popup({ closeButton:false, closeOnClick:false });
+map.on('mousemove', 'raion-fill', e => {
+  const f = e.features[0]; const id = f.properties.id;
+  if (!isEnabled(id)) {
+    popup.setLngLat(e.lngLat).setHTML(`<b>${f.properties.name}</b> <span class="soon-tag">незабаром</span><div class="muted" style="margin-top:4px">Поки що показуємо лише ${document.getElementById('scopeName').textContent}.</div>`).addTo(map);
+    return;
+  }
+  const now = Date.now() + liveOffsetMin * 60000;
+  const recent = events.filter(x => x.raion === id && x.role !== 'area' && +new Date(x.ts) <= now).slice(-3).reverse();
+  const lines = recent.map(x => `<div><span class="muted">${fmtTime(x.ts)}</span> ${clean(x.text)}</div>`).join('');
+  popup.setLngLat(e.lngLat).setHTML(`<b>${f.properties.name}</b>${lines ? '<div style="margin-top:4px">' + lines + '</div>' : '<div class="muted">повідомлень немає</div>'}`).addTo(map);
+});
+map.on('mouseleave', 'raion-fill', () => popup.remove());
+
+(async () => {
+  await loadConfig(); await loadGeo();
+  await poll();
+  if (map.loaded()) applyEnabled(); else map.on('load', applyEnabled);
+  map.on('load', render);
+  setInterval(render, 1000);
+  setInterval(poll, 10000);
+})();
+</script>
+</body>
+</html>

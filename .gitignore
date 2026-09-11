@@ -1,0 +1,6 @@
+.venv/
+*.session
+*.session-journal
+.env
+data/events.sqlite*
+__pycache__/

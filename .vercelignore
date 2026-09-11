@@ -1,0 +1,7 @@
+.venv
+tests
+data/samples.jsonl
+data/events.sqlite*
+data/tg.session*
+PLAN.md
+.github
