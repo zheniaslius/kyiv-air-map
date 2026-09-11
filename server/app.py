@@ -72,3 +72,5 @@ def create_app(stateless: bool) -> FastAPI:
                     "source": os.environ.get("SOURCE", "auto"), "now": _now().isoformat()}
 
     return app
+
+

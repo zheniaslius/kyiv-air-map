@@ -50,14 +50,27 @@
   #about h2 { font-size:16px; margin:0 0 10px; }
   #about p { margin:8px 0; }
   #about .foot { display:flex; justify-content:flex-end; margin-top:12px; }
+  .win-head { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .win-btn { flex:none; width:22px; height:22px; margin-right:-4px; padding:0; border:0; border-radius:6px; background:none; color:var(--muted); cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .win-btn:hover { background:#eceef1; color:var(--text); }
+  .win-btn svg { transition:transform .15s; }
+  .win:not(.min) .win-btn svg { transform:rotate(180deg); }
+  .win.min .win-body { display:none; }
+  #panel.min, #feed.min { padding:8px 14px; width:auto; }
+  #panel.min { right:auto; }
+  #panel.min h1, #feed.min h2 { margin:0; }
+  .maplibregl-ctrl-group button.win-all { display:flex; align-items:center; justify-content:center; color:#333; }
+  .win-all .ico-expand, .win-all.restore .ico-collapse { display:none; }
+  .win-all.restore .ico-expand { display:block; }
   @media (max-width:800px) { #feed { display:none; } #panel { width:auto; right:16px; } }
 </style>
 </head>
 <body>
 <div id="map"></div>
 
-<div id="panel" class="card">
-  <h1>Повітряні цілі по районах</h1>
+<div id="panel" class="card win">
+  <div class="win-head"><h1>Повітряні цілі по районах</h1><button class="win-btn" type="button" title="Згорнути" aria-expanded="true" aria-controls="panelBody"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg></button></div>
+  <div class="win-body" id="panelBody">
   <div class="sub">за повідомленнями <span id="src">@war_monitor</span></div>
   <div id="scope"><span class="pill" id="scopeName">Київ</span><span class="soon">інші міста — незабаром</span></div>
   <div class="row"><span class="muted">Останнє повідомлення</span><span id="lastmsg">—</span></div>
@@ -72,9 +85,10 @@
     <label><input type="checkbox" id="labels" checked> назви</label>
     <button class="btn" id="aboutBtn" style="margin-left:auto">Як це працює</button>
   </div>
+  </div>
 </div>
 
-<div id="feed" class="card"><h2>Останні повідомлення</h2><div id="feedItems"></div></div>
+<div id="feed" class="card win"><div class="win-head"><h2>Останні повідомлення</h2><button class="win-btn" type="button" title="Згорнути" aria-expanded="true" aria-controls="feedItems"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg></button></div><div class="win-body" id="feedItems"></div></div>
 
 <div id="about" hidden><div class="card">
   <h2>Як це працює</h2>
@@ -83,6 +97,7 @@
   <p>Район стає <b style="color:var(--accent)">червоним</b>, коли про нього пишуть, і поступово блідне сам: дрони — приблизно за годину, ракети — за півгодини.</p>
   <p>Після «чисто» або «відбою» район гасне і ненадовго стає <b style="color:var(--ok)">зеленим</b>.</p>
   <p>Наведіть курсор на район, щоб побачити останні повідомлення. Повзунок «Час» відмотує назад.</p>
+  <p>Стрілка в кутку вікна згортає його до заголовка. Клавіша Esc або кнопка внизу праворуч згортає всі вікна одразу, щоб бачити всю карту.</p>
   <p class="muted">Це не офіційна повітряна тривога, а лише автоматичний перегляд Telegram-каналу. Дані можуть запізнюватись або бути неточними.</p>
   <div class="foot"><button class="btn" id="aboutClose">Зрозуміло</button></div>
 </div></div>
@@ -138,6 +153,51 @@ document.getElementById('slider').oninput = e => { liveOffsetMin = +e.target.val
 document.getElementById('aboutBtn').onclick = () => document.getElementById('about').hidden = false;
 document.getElementById('aboutClose').onclick = () => document.getElementById('about').hidden = true;
 document.getElementById('about').onclick = e => { if (e.target.id === 'about') e.target.hidden = true; };
+
+// windows: each card collapses to its title; the map control (or Esc) collapses everything at once
+const WINS = ['panel', 'feed'];
+const about = document.getElementById('about');
+const isMin = id => document.getElementById(id).classList.contains('min');
+const anyOpen = () => WINS.some(id => !isMin(id));
+function setMin(id, on) {
+  const w = document.getElementById(id);
+  w.classList.toggle('min', on);
+  const b = w.querySelector('.win-btn');
+  b.setAttribute('aria-expanded', String(!on)); b.title = on ? 'Розгорнути' : 'Згорнути';
+  updateAllBtn();
+  try { localStorage.setItem('wins', JSON.stringify(Object.fromEntries(WINS.map(k => [k, isMin(k)])))); } catch {}
+}
+function updateAllBtn() {
+  const b = document.querySelector('.win-all'); if (!b) return;
+  const open = anyOpen();
+  b.classList.toggle('restore', !open);
+  b.title = open ? 'Згорнути всі вікна (Esc)' : 'Розгорнути всі вікна';
+  b.setAttribute('aria-label', b.title);
+}
+function toggleAll() {
+  const open = anyOpen();
+  if (open) about.hidden = true;
+  for (const id of WINS) setMin(id, open);
+}
+map.addControl({
+  onAdd() {
+    const c = document.createElement('div'); c.className = 'maplibregl-ctrl maplibregl-ctrl-group';
+    c.innerHTML = '<button type="button" class="win-all">'
+      + '<svg class="ico-collapse" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 2.5 8 6l3.5-3.5M4.5 13.5 8 10l3.5 3.5"/></svg>'
+      + '<svg class="ico-expand" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 6 8 2.5 11.5 6M4.5 10 8 13.5 11.5 10"/></svg>'
+      + '</button>';
+    c.firstChild.onclick = toggleAll;
+    return c;
+  },
+  onRemove() {},
+}, 'bottom-right');
+for (const id of WINS) document.querySelector(`#${id} .win-btn`).onclick = () => setMin(id, !isMin(id));
+try { const saved = JSON.parse(localStorage.getItem('wins') || '{}'); for (const id of WINS) if (saved[id]) setMin(id, true); } catch {}
+updateAllBtn();
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (!about.hidden) about.hidden = true; else if (anyOpen()) toggleAll();
+});
 
 // strip the channel's marker emoji (🅿️ ⚠️ 🔄 …) from the start of a message: the type is already shown by the dot
 const clean = t => t.replace(/^[\s\p{Extended_Pictographic}\uFE0F\u200D]+/u, '').replace(/</g, '&lt;');
