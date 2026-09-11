@@ -2,9 +2,36 @@
 <html lang="uk">
 <head>
 <meta charset="utf-8">
-<title>Повітряні цілі по районах</title>
+<title>Карта повітряних цілей у Києві | Останні повідомлення</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Інтерактивна карта останніх повідомлень про повітряні цілі у районах Києва. Дані автоматично аналізуються з публічних повідомлень та не замінюють офіційні сповіщення.">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<link rel="canonical" href="https://kyiv-air-map.vercel.app/">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="uk_UA">
+<meta property="og:site_name" content="Карта повітряних цілей">
+<meta property="og:title" content="Карта повітряних цілей у Києві">
+<meta property="og:description" content="Інтерактивна карта останніх повідомлень про повітряні цілі у районах Києва.">
+<meta property="og:url" content="https://kyiv-air-map.vercel.app/">
+<meta property="og:image" content="https://kyiv-air-map.vercel.app/social-preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Карта повітряних цілей у Києві">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Карта повітряних цілей у Києві">
+<meta name="twitter:description" content="Інтерактивна карта останніх повідомлень про повітряні цілі у районах Києва.">
+<meta name="twitter:image" content="https://kyiv-air-map.vercel.app/social-preview.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Карта повітряних цілей",
+  "url": "https://kyiv-air-map.vercel.app/",
+  "inLanguage": "uk-UA",
+  "description": "Інтерактивна карта останніх повідомлень про повітряні цілі у районах Києва."
+}
+</script>
 <link href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <style>
@@ -14,6 +41,7 @@
   }
   html, body { margin:0; height:100%; background:var(--bg); color:var(--text);
                font:14px/1.5 -apple-system, "Segoe UI", Inter, Roboto, system-ui, sans-serif; }
+  #map-shell { position:relative; height:100dvh; min-height:560px; overflow:hidden; }
   #map { position:absolute; inset:0; }
   .card { background:var(--card); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); }
   #panel { position:absolute; top:16px; left:16px; z-index:2; width:272px; padding:16px 18px; }
@@ -63,10 +91,19 @@
   .maplibregl-ctrl-group button.win-all { display:flex; align-items:center; justify-content:center; color:#333; }
   .win-all .ico-expand, .win-all.restore .ico-collapse { display:none; }
   .win-all.restore .ico-expand { display:block; }
-  @media (max-width:800px) { #feed { display:none; } #panel { width:auto; right:16px; } }
+  #seo-content { max-width:960px; margin:0 auto; padding:56px 24px 44px; }
+  #seo-content h2 { margin:0 0 14px; font-size:26px; line-height:1.2; font-weight:650; }
+  #seo-content > p { max-width:760px; margin:0; color:#4b5563; font-size:16px; }
+  .seo-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:28px; margin-top:34px; }
+  .seo-grid h3 { margin:0 0 7px; font-size:15px; }
+  .seo-grid p { margin:0; color:var(--muted); }
+  #site-footer { border-top:1px solid var(--line); padding:18px 24px; color:var(--muted); font-size:12px; text-align:center; }
+  @media (max-width:800px) { #feed { display:none; } #panel { width:auto; right:16px; } .seo-grid { grid-template-columns:1fr; gap:22px; } #seo-content { padding:40px 20px 32px; } #seo-content h2 { font-size:23px; } }
 </style>
 </head>
 <body>
+<main>
+<section id="map-shell" aria-label="Інтерактивна карта повітряних цілей у Києві">
 <div id="map"></div>
 
 <div id="panel" class="card win">
@@ -102,6 +139,28 @@
   <p class="muted">Це не офіційна повітряна тривога, а лише автоматичний перегляд Telegram-каналу. Дані можуть запізнюватись або бути неточними.</p>
   <div class="foot"><button class="btn" id="aboutClose">Зрозуміло</button></div>
 </div></div>
+</section>
+
+<section id="seo-content" aria-labelledby="about-map-title">
+  <h2 id="about-map-title">Карта повідомлень про повітряні цілі у Києві</h2>
+  <p>Сервіс показує останні згадки про повітряні цілі в районах Києва на основі автоматичного аналізу публічних повідомлень. Це довідковий інструмент для огляду повідомлень, а не офіційна система оповіщення.</p>
+  <div class="seo-grid">
+    <section>
+      <h3>Що показує карта</h3>
+      <p>Райони підсвічуються, коли в повідомленнях є згадки про повітряні цілі. Інтенсивність поступово зменшується, щоб було видно свіжість інформації.</p>
+    </section>
+    <section>
+      <h3>Джерело даних</h3>
+      <p>Карта автоматично обробляє публічні повідомлення каналу @war_monitor. Інформація може надходити із затримкою або містити неточності.</p>
+    </section>
+    <section>
+      <h3>Важливо</h3>
+      <p>Для рішень щодо безпеки користуйтеся лише офіційними повідомленнями про повітряну тривогу та вказівками місцевої влади.</p>
+    </section>
+  </div>
+</section>
+</main>
+<footer id="site-footer">Карта повітряних цілей у Києві. Дані мають довідковий характер.</footer>
 
 <script>
 const KIND_COLOR = { jet:'#e5484d', uav:'#e5484d', cruise:'#e07b39', ballistic:'#8e4ec6', bomb:'#d9a21b', clear:'#30a46c' };

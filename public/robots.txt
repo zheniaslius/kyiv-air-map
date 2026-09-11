@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kyiv-air-map.vercel.app/sitemap.xml

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Карта повітряних цілей у Києві</title>
+  <desc id="desc">Інтерактивна карта останніх повідомлень про повітряні цілі у Києві.</desc>
+  <rect width="1200" height="630" fill="#f4f5f7"/>
+  <rect width="1200" height="18" fill="#1f2933"/>
+  <rect x="74" y="70" width="1052" height="490" rx="18" fill="#ffffff" stroke="#e3e6ea" stroke-width="2"/>
+  <rect x="74" y="70" width="1052" height="68" rx="18" fill="#1f2933"/>
+  <rect x="74" y="120" width="1052" height="18" fill="#1f2933"/>
+  <circle cx="112" cy="104" r="12" fill="#e5484d"/>
+  <text x="140" y="114" fill="#ffffff" font-family="Arial, sans-serif" font-size="25" font-weight="700">КАРТА ПОВІТРЯНИХ ЦІЛЕЙ</text>
+  <text x="151" y="207" fill="#1f2933" font-family="Arial, sans-serif" font-size="42" font-weight="700">Київ</text>
+  <text x="151" y="242" fill="#6b7480" font-family="Arial, sans-serif" font-size="19">Останні повідомлення по районах</text>
+  <g stroke="#ffffff" stroke-width="4">
+    <path d="M493 186 595 159 686 210 660 289 568 322 485 271Z" fill="#f0d6d7"/>
+    <path d="M686 210 780 187 864 239 838 315 740 340 660 289Z" fill="#e5484d"/>
+    <path d="M485 271 568 322 543 406 442 426 389 354Z" fill="#e9ecf0"/>
+    <path d="M568 322 660 289 740 340 715 430 620 452 543 406Z" fill="#f19b9e"/>
+    <path d="M740 340 838 315 916 372 881 449 790 473 715 430Z" fill="#e9ecf0"/>
+    <path d="M620 452 715 430 790 473 750 518 657 509Z" fill="#e9ecf0"/>
+  </g>
+  <circle cx="769" cy="244" r="16" fill="#ffffff"/>
+  <circle cx="769" cy="244" r="7" fill="#e5484d"/>
+  <rect x="151" y="431" width="187" height="36" rx="18" fill="#1f2933"/>
+  <text x="174" y="455" fill="#ffffff" font-family="Arial, sans-serif" font-size="17" font-weight="700">ПОВІДОМЛЕННЯ</text>
+  <text x="151" y="504" fill="#6b7480" font-family="Arial, sans-serif" font-size="18">Довідковий сервіс, не офіційне оповіщення</text>
+  <rect y="602" width="1200" height="28" fill="#e5484d"/>
+</svg>
