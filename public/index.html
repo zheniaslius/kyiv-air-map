@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <title>Повітряні цілі по районах</title>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
@@ -94,7 +98,7 @@
   <h2>Як це працює</h2>
   <p>Карта показує, де за повідомленнями каналу <b id="about-src">@war_monitor</b> нещодавно бачили повітряні цілі.</p>
   <p>Поки що працює лише <b id="about-scope">Київ</b>. Інші міста та області позначені сірим і з'являться незабаром.</p>
-  <p>Район стає <b style="color:var(--accent)">червоним</b>, коли про нього пишуть, і поступово блідне сам: дрони — приблизно за годину, ракети — за півгодини.</p>
+  <p>Район стає <b style="color:var(--accent)">червоним</b>, коли про н��ого пишуть, і поступово блідне сам: дрони — приблизно за годину, ракети — за півгодини.</p>
   <p>Після «чисто» або «відбою» район гасне і ненадовго стає <b style="color:var(--ok)">зеленим</b>.</p>
   <p>Наведіть курсор на район, щоб побачити останні повідомлення. Повзунок «Час» відмотує назад.</p>
   <p>Стрілка в кутку вікна згортає його до заголовка. Клавіша Esc або кнопка внизу праворуч згортає всі вікна одразу, щоб бачити всю карту.</p>
