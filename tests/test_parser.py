@@ -33,6 +33,18 @@ def test_kyiv_unknown_place_spreads_over_all_districts():
     assert raions(evs, roles=("city",)) == KYIV_ALL and all(e.weight == 0.5 for e in evs)
 
 
+def test_named_water_body_is_not_the_city():
+    """"Київським водосховищем" must not stem to Київ and light every district."""
+    evs = ev("Київщина:\n⚠️ 4х БпЛА над Київським водосховищем")
+    assert raions(evs) == {VYSHHOROD} and not KYIV_ALL & {e.raion for e in evs}
+    assert raions(ev("Київщина:\n⚠️ 8х БпЛА від Київського водосховища"), roles=("origin",)) == {VYSHHOROD}
+
+
+def test_unknown_named_feature_is_dropped():
+    """"Чорного моря" is offshore: better nothing than the village the adjective used to match."""
+    assert raions(ev("Одещина:\n⚠️ 2х БпЛА з Чорного моря у напрямку Одеси"), roles=("origin",)) == set()
+
+
 def test_oblast_header_town():
     assert raions(ev("Київщина:\n🅿️1х реактив Бровари")) == {BROVARY}
 

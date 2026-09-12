@@ -66,6 +66,16 @@ OBLAST_ADJ = {  # "<adj>ська область"
     "рівненськ": "UA56", "сумськ": "UA59", "тернопільськ": "UA61", "харківськ": "UA63", "херсонськ": "UA65",
     "хмельницьк": "UA68", "черкаськ": "UA71", "чернівецьк": "UA73", "чернігівськ": "UA74",
 }
+# "<adj> водосховище / море / ГЕС" is a named feature, not a settlement: on its own the adjective stems to a
+# city ("Київським" -> Київ) and would light it up. Known features map to the raion that holds them; the rest
+# are dropped rather than guessed at.
+FEATURE_NOUNS = ("водосховищ", "мор", "лиман", "затоц", "заток", "гес", "шосе")
+VYSHHOROD = "UA32100000000065867"
+FEATURES = {
+    ("київськ", "водосховищ"): VYSHHOROD,  # Київське водосховище — north of the city, in Вишгородський район
+    ("київськ", "мор"): VYSHHOROD,         # the channel also calls it "Київське море"
+    ("київськ", "гес"): VYSHHOROD,
+}
 KYIV_CITY_DISTRICTS = ["голосіївськ", "дарницьк", "деснянськ", "дніпровськ", "оболонськ", "печерськ",
                        "подільськ", "святошинськ", "солом'янськ", "шевченківськ"]
 # capitalised common words that collide with village names
@@ -107,6 +117,11 @@ def stem_variants(word: str) -> set[str]:
 def adj_stem(word: str) -> str:
     """Stem for adjectival raion names: Броварському/Броварського/Броварський -> броварськ."""
     return re.sub(r"(ий|ого|ому|им|ім|а|ої|ій|ою)$", "", norm(word))
+
+
+def feature_adj(word: str) -> str:
+    """Any case of a -ський adjective -> its stem: Київським/Київського/Київське -> київськ."""
+    return re.sub(r"(ськ)\w*$", r"\1", norm(word))
 
 
 RANK = {"city": 4, "town": 3, "village": 2, "hamlet": 1, "urban": 2}
@@ -232,6 +247,16 @@ class Parser:
                 role = "current"; i += 1; continue
             if tok in ("/",):
                 i += 1; continue
+            # named feature: "над Київським водосховищем", "з Чорного моря" — resolve the pair or skip both
+            # words, never the adjective alone
+            if tok[:1].isupper() and i + 1 < len(toks):
+                noun = next((n for n in FEATURE_NOUNS if norm(toks[i + 1]).startswith(n)), None)
+                if noun:
+                    rid = FEATURES.get((feature_adj(tok), noun))
+                    if rid:
+                        out.append((rid, role, tok + " " + toks[i + 1]))
+                    i += 2
+                    continue
             # raion by adjective: "Броварському районі" / "Броварський р-н"
             if tok[:1].isupper() and i + 1 < len(toks) and norm(toks[i + 1]).startswith(("район", "р-н")):
                 adj = adj_stem(tok)

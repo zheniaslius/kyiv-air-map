@@ -62,6 +62,11 @@ Role weights in `ROLE_WEIGHT`: current 1.0, target 0.6, origin 0.3, whole-oblast
 Intensity per raion = Σ weight × count-factor × exp(−age/τ), clamped to 1. A "чисто / відбій" message zeroes the raion
 and flashes it green for 10 min.
 
+Named features are resolved by `FEATURES` in `ingest/parser.py` (Київське водосховище / «Київське море» /
+Київська ГЕС → Вишгородський район). Any other `<adj> водосховище|море|лиман|шосе|ГЕС` pair is dropped: without
+this the adjective alone falls through to the settlement lookup, where "Київським" stems to Київ and lights all
+10 districts, and "Чорного" matched a village in Odesa oblast.
+
 Threat kind comes from keywords first (реактив, Бандероль, баліст…), then from the channel's own line markers:
 🅿️ / 🔄 jet drone, ⚠️ regular drone, ‼️ ☄ 🟣 ballistic, 💣 glide bomb. The UI strips these markers from displayed text.
 

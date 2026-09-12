@@ -7,7 +7,8 @@ deployed on Vercel (static site + one stateless Python function).
 Coverage: the map draws the whole country (oblasts labelled zoomed out, raions zoomed in), but alerts are gated
 to `ENABLED_OBLASTS`, back to `UA80,UA32` (Kyiv city + Kyiv oblast) as of 2026-09-12; the rest is grey "coming soon".
 Open: Telegram MTProto source needs your api_id/api_hash; alerts.in.ua layer deferred.
-Known parser gaps: typos in place names ("Переслав"), Black Sea / Moldova mentions, "той самий маршрут" follow-ups.
+Known parser gaps: typos in place names ("Переслав"), offshore launches (Чорне море — now dropped rather than
+mis-pinned, but still no raion), Moldova mentions, "той самий маршрут" follow-ups.
 
 ## Goal
 A web map of Ukraine where each район lights up red when a threat (UAV, missile, etc.)
