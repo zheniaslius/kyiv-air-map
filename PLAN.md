@@ -1,9 +1,12 @@
 # Air-alert map of Ukraine by район — plan
 
-## Status (2026-09-11)
-Phases 0–4 are built and running (see README.md): corpus of 1187 messages, 138 polygons, parser at 99%
-raion coverage on the corpus with 10 regression tests, SQLite store, web-preview poller, FastAPI, MapLibre UI.
-Open: Telegram MTProto source needs your api_id/api_hash; alerts.in.ua layer deferred; deployment (Phase 5).
+## Status (2026-09-12)
+Phases 0–5 are built and running (see README.md): corpus of 1187 messages, 147 polygons, parser at 99%
+raion coverage on the corpus with 10 regression tests, SQLite store, web-preview poller, FastAPI, MapLibre UI,
+deployed on Vercel (static site + one stateless Python function).
+Coverage is country-wide as of 2026-09-12: every raion is live, not just Kyiv — the earlier `ENABLED_OBLASTS`
+gate is gone. Oblasts are labelled zoomed out, raions zoomed in.
+Open: Telegram MTProto source needs your api_id/api_hash; alerts.in.ua layer deferred.
 Known parser gaps: typos in place names ("Переслав"), Black Sea / Moldova mentions, "той самий маршрут" follow-ups.
 
 ## Goal

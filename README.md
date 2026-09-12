@@ -1,6 +1,7 @@
 # Air-alert map of Ukraine by район
 
-Live map where each район glows red when @war_monitor reports a threat there and fades as the threat passes.
+Live map of the whole country: each район glows red when @war_monitor reports a threat there and fades as the
+threat passes. All 136 post-2020 raions are live, Kyiv is split into its 10 city districts, plus Sevastopol.
 
 ## Run
 
@@ -26,16 +27,19 @@ every 10 s). For the MTProto source copy `.env.example` to `.env`, fill `TG_API_
 | `api/index.py` | Vercel serverless entrypoint (stateless backend); `vercel.json` rewrites `/api/*` here |
 | `public/index.html` | MapLibre map; fade computed client-side every second |
 | `public/data/raions.geojson` | 136 post-2020 raions + 10 Kyiv city districts + Sevastopol (OSM, simplified) |
+| `public/data/oblasts.geojson` | 27 oblast outlines with `name`, drawn as the thicker borders |
+| `public/data/oblast-labels.geojson` | one label anchor per oblast, shown below zoom 6.2; regenerate with `python scripts/oblast_label_points.py` |
 | `data/places.json` | 29k settlements → raion via KATOTTG code (OSM) |
 | `data/aliases.json` | name → raion overrides; ~680 Kyiv neighbourhoods → city district, generated from OSM points |
 
-## Regions
+## Coverage
 
-Users only see alerts for the regions in `ENABLED_OBLASTS` (comma-separated KATOTTG oblast prefixes, default `UA80` =
-Kyiv city); `ENABLED_LABEL` (default `Київ`) is the name shown in the panel. The rest of the map is greyed out as
-"незабаром". Filtering happens in `/api/events` and `/api/messages`, so other regions' data never reaches the browser.
-The poller keeps ingesting the whole channel, so adding a region (e.g. `UA80,UA32` for Kyiv + Kyiv oblast) is just a
-restart with the new value.
+The whole country is live: every raion in `public/data/raions.geojson` (136 raions, Kyiv's 10 city districts,
+Sevastopol) reacts to events, and the API returns events for all of them — there is no per-region gate any more.
+Kyiv keeps its finer granularity: neighbourhood names in `data/aliases.json` resolve to a city district, and a
+"Київ:" message with no recognisable neighbourhood lights all 10 districts at half weight.
+
+The map labels oblasts below zoom 6.2 and raions above it; the "назви" checkbox toggles both.
 
 ## Deploy (Vercel)
 

@@ -2,25 +2,25 @@
 <html lang="uk">
 <head>
 <meta charset="utf-8">
-<title>Карта повітряних цілей у Києві | Останні повідомлення</title>
+<title>Карта повітряних цілей над Україною | Останні повідомлення по районах</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Інтерактивна карта останніх повідомлень про повітряні цілі у районах Києва. Дані автоматично аналізуються з публічних повідомлень та не замінюють офіційні сповіщення.">
+<meta name="description" content="Інтерактивна карта останніх повідомлень про повітряні цілі в районах усіх областей України. Дані автоматично аналізуються з публічних повідомлень та не замінюють офіційні сповіщення про повітряну тривогу.">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 <link rel="canonical" href="https://kyiv-air-map.vercel.app/">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="uk_UA">
 <meta property="og:site_name" content="Карта повітряних цілей">
-<meta property="og:title" content="Карта повітряних цілей у Києві">
-<meta property="og:description" content="Інтерактивна карта останніх повідомлень про повітряні цілі у районах Києва.">
+<meta property="og:title" content="Карта повітряних цілей над Україною">
+<meta property="og:description" content="Інтерактивна карта останніх повідомлень про повітряні цілі в районах усіх областей України.">
 <meta property="og:url" content="https://kyiv-air-map.vercel.app/">
 <meta property="og:image" content="https://kyiv-air-map.vercel.app/social-preview.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Карта повітряних цілей у Києві">
+<meta property="og:image:alt" content="Карта повітряних цілей над Україною">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Карта повітряних цілей у Києві">
-<meta name="twitter:description" content="Інтерактивна карта останніх повідомлень про повітряні цілі у районах Києва.">
+<meta name="twitter:title" content="Карта повітряних цілей над Україною">
+<meta name="twitter:description" content="Інтерактивна карта останніх повідомлень про повітряні цілі в районах усіх областей України.">
 <meta name="twitter:image" content="https://kyiv-air-map.vercel.app/social-preview.png">
 <script type="application/ld+json">
 {
@@ -29,7 +29,8 @@
   "name": "Карта повітряних цілей",
   "url": "https://kyiv-air-map.vercel.app/",
   "inLanguage": "uk-UA",
-  "description": "Інтерактивна карта останніх повідомлень про повітряні цілі у районах Києва."
+  "description": "Інтерактивна карта останніх повідомлень про повітряні цілі в районах усіх областей України.",
+  "about": { "@type": "Place", "name": "Україна" }
 }
 </script>
 <link href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
@@ -49,9 +50,8 @@
   #panel .sub { color:var(--muted); font-size:12.5px; margin-bottom:8px; }
   #scope { display:flex; align-items:center; gap:8px; margin-bottom:12px; padding:7px 10px; border-radius:9px;
            background:#f4f5f7; border:1px solid var(--line); font-size:12.5px; }
-  #scope .pill { background:var(--text); color:#fff; border-radius:999px; padding:1px 8px; font-size:11.5px; font-weight:600; }
-  #scope .soon { color:var(--muted); }
-  .soon-tag { display:inline-block; background:#eef0f3; color:var(--muted); border-radius:999px; padding:1px 8px; font-size:11px; font-weight:600; letter-spacing:.03em; text-transform:uppercase; }
+  #scope .pill { background:var(--text); color:#fff; border-radius:999px; padding:1px 8px; font-size:11.5px; font-weight:600; white-space:nowrap; }
+  #scope .note { color:var(--muted); }
   .row { display:flex; justify-content:space-between; align-items:center; gap:8px; margin:5px 0; font-size:13px; }
   .muted { color:var(--muted); }
   .dot { display:inline-block; width:8px; height:8px; border-radius:50%; background:var(--ok); margin-right:6px; }
@@ -97,20 +97,23 @@
   .seo-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:28px; margin-top:34px; }
   .seo-grid h3 { margin:0 0 7px; font-size:15px; }
   .seo-grid p { margin:0; color:var(--muted); }
+  #regions, #safety { margin-top:30px; max-width:760px; }
+  #regions h3, #safety h3 { margin:0 0 7px; font-size:15px; }
+  #regions p, #safety p { margin:0; color:var(--muted); }
   #site-footer { border-top:1px solid var(--line); padding:18px 24px; color:var(--muted); font-size:12px; text-align:center; }
   @media (max-width:800px) { #feed { display:none; } #panel { width:auto; right:16px; } .seo-grid { grid-template-columns:1fr; gap:22px; } #seo-content { padding:40px 20px 32px; } #seo-content h2 { font-size:23px; } }
 </style>
 </head>
 <body>
 <main>
-<section id="map-shell" aria-label="Інтерактивна карта повітряних цілей у Києві">
+<section id="map-shell" aria-label="Інтерактивна карта повітряних цілей у районах України">
 <div id="map"></div>
 
 <div id="panel" class="card win">
   <div class="win-head"><h1>Повітряні цілі по районах</h1><button class="win-btn" type="button" title="Згорнути" aria-expanded="true" aria-controls="panelBody"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg></button></div>
   <div class="win-body" id="panelBody">
   <div class="sub">за повідомленнями <span id="src">@war_monitor</span></div>
-  <div id="scope"><span class="pill" id="scopeName">Київ</span><span class="soon">інші міста — незабаром</span></div>
+  <div id="scope"><span class="pill">Уся Україна</span><span class="note">136 районів + Київ</span></div>
   <div class="row"><span class="muted">Останнє повідомлення</span><span id="lastmsg">—</span></div>
   <div class="row"><span class="muted">Зв'язок</span><span><span class="dot" id="dot"></span><span id="lastpoll">—</span></span></div>
   <div class="row"><span class="muted">Районів з цілями</span><span id="active">0</span></div>
@@ -131,7 +134,7 @@
 <div id="about" hidden><div class="card">
   <h2>Як це працює</h2>
   <p>Карта показує, де за повідомленнями каналу <b id="about-src">@war_monitor</b> нещодавно бачили повітряні цілі.</p>
-  <p>Поки що працює лише <b id="about-scope">Київ</b>. Інші міста та області позначені сірим і з'являться незабаром.</p>
+  <p>Карта охоплює <b>усю Україну</b>: 136 районів усіх областей, Севастополь, а Київ показано по його 10 міських районах. На дальньому масштабі підписані області, ближче — назви районів.</p>
   <p>Район стає <b style="color:var(--accent)">червоним</b>, коли про нього пишуть, і поступово блідне сам: дрони — приблизно за годину, ракети — за півгодини.</p>
   <p>Після «чисто» або «відбою» район гасне і ненадовго стає <b style="color:var(--ok)">зеленим</b>.</p>
   <p>Наведіть курсор на район, щоб побачити останні повідомлення. Повзунок «Час» відмотує назад.</p>
@@ -142,25 +145,36 @@
 </section>
 
 <section id="seo-content" aria-labelledby="about-map-title">
-  <h2 id="about-map-title">Карта повідомлень про повітряні цілі у Києві</h2>
-  <p>Сервіс показує останні згадки про повітряні цілі в районах Києва на основі автоматичного аналізу публічних повідомлень. Це довідковий інструмент для огляду повідомлень, а не офіційна система оповіщення.</p>
+  <h2 id="about-map-title">Карта повідомлень про повітряні цілі в районах України</h2>
+  <p>Сервіс показує останні згадки про повітряні цілі в районах усіх областей України на основі автоматичного аналізу публічних повідомлень. Це довідковий інструмент для огляду повідомлень, а не офіційна система оповіщення.</p>
   <div class="seo-grid">
     <section>
       <h3>Що показує карта</h3>
       <p>Райони підсвічуються, коли в повідомленнях є згадки про повітряні цілі. Інтенсивність поступово зменшується, щоб було видно свіжість інформації.</p>
     </section>
     <section>
+      <h3>Охоплення</h3>
+      <p>136 районів усіх областей, Київ — окремо по 10 міських районах, а також Севастополь і райони Криму. Області підписані на загальному вигляді, назви районів — при наближенні.</p>
+    </section>
+    <section>
       <h3>Джерело даних</h3>
       <p>Карта автоматично обробляє публічні повідомлення каналу @war_monitor. Інформація може надходити із затримкою або містити неточності.</p>
     </section>
-    <section>
-      <h3>Важливо</h3>
-      <p>Для рішень щодо безпеки користуйтеся лише офіційними повідомленнями про повітряну тривогу та вказівками місцевої влади.</p>
-    </section>
   </div>
+  <section id="regions">
+    <h3>Області на карті</h3>
+    <p>Вінницька, Волинська, Дніпропетровська, Донецька, Житомирська, Закарпатська, Запорізька, Івано-Франківська,
+      Київська, Кіровоградська, Луганська, Львівська, Миколаївська, Одеська, Полтавська, Рівненська, Сумська,
+      Тернопільська, Харківська, Херсонська, Хмельницька, Черкаська, Чернівецька, Чернігівська області, Автономна
+      Республіка Крим, а також міста Київ і Севастополь.</p>
+  </section>
+  <section id="safety">
+    <h3>Важливо</h3>
+    <p>Для рішень щодо безпеки користуйтеся лише офіційними повідомленнями про повітряну тривогу та вказівками місцевої влади.</p>
+  </section>
 </section>
 </main>
-<footer id="site-footer">Карта повітряних цілей у Києві. Дані мають довідковий характер.</footer>
+<footer id="site-footer">Карта повітряних цілей над Україною. Дані мають довідковий характер.</footer>
 
 <script>
 const KIND_COLOR = { jet:'#e5484d', uav:'#e5484d', cruise:'#e07b39', ballistic:'#8e4ec6', bomb:'#d9a21b', clear:'#30a46c' };
@@ -172,10 +186,14 @@ let lastTs = null;
 let liveOffsetMin = 0;
 let raionNames = {};
 let featureIds = [];
-let ENABLED = ['UA80'];          // oblast codes users can see; the rest of the map is "coming soon"
-let enabledBounds = null;
-const hadHash = !!location.hash; // a shared #zoom/lat/lng link wins over the default zoom-to-enabled-area
-const isEnabled = id => ENABLED.some(code => id.startsWith(code));
+
+const UKRAINE = [[22.0, 44.2], [40.3, 52.4]];
+// keep the country clear of the cards: they sit over the map, and on a phone the panel covers half of it
+function fitPadding() {
+  const narrow = window.innerWidth < 800;
+  if (narrow) return { top: Math.min(document.getElementById('panel').offsetHeight + 26, innerHeight * 0.55), right: 14, bottom: 28, left: 14 };
+  return { top: 24, right: 316, bottom: 24, left: 288 };
+}
 
 const map = new maplibregl.Map({
   container: 'map',
@@ -186,6 +204,7 @@ const map = new maplibregl.Map({
       osm: { type:'raster', tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'], tileSize:256, attribution:'© OpenStreetMap' },
       raions: { type:'geojson', data:'/data/raions.geojson', promoteId:'id' },
       oblasts: { type:'geojson', data:'/data/oblasts.geojson' },
+      'oblast-labels': { type:'geojson', data:'/data/oblast-labels.geojson' },
     },
     layers: [
       { id:'bg', type:'background', paint:{ 'background-color':'#f4f5f7' } },
@@ -195,20 +214,24 @@ const map = new maplibregl.Map({
           'fill-color': ['case', ['boolean', ['feature-state','cleared'], false], '#30a46c', ['coalesce', ['feature-state','color'], '#e5484d']],
           'fill-opacity': ['interpolate', ['linear'], ['coalesce', ['feature-state','intensity'], 0], 0, 0, 0.05, 0.12, 1, 0.75] } },
       { id:'raion-line', type:'line', source:'raions', paint:{ 'line-color':'#ffffff', 'line-width':0.8 } },
-      { id:'oblast-line', type:'line', source:'oblasts', paint:{ 'line-color':'#c3c9d2', 'line-width':1.2 } },
-      { id:'enabled-outline', type:'line', source:'oblasts', filter:['==', ['get','oblast'], ''], paint:{ 'line-color':'#1f2933', 'line-width':1.6 } },
+      { id:'oblast-line', type:'line', source:'oblasts', paint:{ 'line-color':'#a7b0bd', 'line-width':1.2 } },
       { id:'raion-label', type:'symbol', source:'raions', minzoom:6.2, layout:{ 'text-field':['get','name'], 'text-size':10.5, 'text-font':['Open Sans Regular'] },
         paint:{ 'text-color':'#4b5563', 'text-halo-color':'#f4f5f7', 'text-halo-width':1.2 } },
+      { id:'oblast-label', type:'symbol', source:'oblast-labels', maxzoom:6.2,
+        layout:{ 'text-field':['get','name'], 'text-size':10.5, 'text-font':['Open Sans Regular'], 'text-letter-spacing':0.03,
+                 'text-max-width':8, 'text-padding':1, 'text-variable-anchor':['center','top','bottom','left','right'], 'text-radial-offset':0.4 },
+        paint:{ 'text-color':'#55606e', 'text-halo-color':'#f4f5f7', 'text-halo-width':1.4 } },
     ],
   },
-  bounds: [[22.0, 44.2], [40.3, 52.4]], fitBoundsOptions: { padding: 20 },
+  bounds: UKRAINE, fitBoundsOptions: { padding: fitPadding() },
   hash: true, attributionControl: false,
 });
 map.addControl(new maplibregl.NavigationControl({ showCompass:false }), 'bottom-right');
 map.addControl(new maplibregl.AttributionControl({ compact:true }), 'bottom-left');
 
 document.getElementById('basemap').onchange = e => map.setLayoutProperty('osm', 'visibility', e.target.checked ? 'visible' : 'none');
-document.getElementById('labels').onchange = e => map.setLayoutProperty('raion-label', 'visibility', e.target.checked ? 'visible' : 'none');
+document.getElementById('labels').onchange = e => { const v = e.target.checked ? 'visible' : 'none';
+  for (const id of ['raion-label', 'oblast-label']) map.setLayoutProperty(id, 'visibility', v); };
 document.getElementById('slider').oninput = e => { liveOffsetMin = +e.target.value; render(); };
 document.getElementById('aboutBtn').onclick = () => document.getElementById('about').hidden = false;
 document.getElementById('aboutClose').onclick = () => document.getElementById('about').hidden = true;
@@ -266,32 +289,12 @@ const fmtTime = ts => new Date(ts).toLocaleTimeString('uk-UA', { hour:'2-digit',
 async function loadConfig() {
   const c = await (await fetch('/api/config')).json();
   TAU = c.tau_min;
-  if (c.enabled_oblasts && c.enabled_oblasts.length) ENABLED = c.enabled_oblasts;
   document.getElementById('src').textContent = '@' + c.channel;
   document.getElementById('about-src').textContent = '@' + c.channel;
-  document.getElementById('scopeName').textContent = c.enabled_label || 'Київ';
-  document.getElementById('about-scope').textContent = c.enabled_label || 'Київ';
-}
-function applyEnabled() {
-  const on = ['in', ['get','oblast'], ['literal', ENABLED]];
-  map.setPaintProperty('raion-base', 'fill-color', ['case', on, '#e9ecf0', '#f3f4f6']);
-  map.setPaintProperty('raion-line', 'line-color', ['case', on, '#ffffff', '#fafbfc']);
-  map.setPaintProperty('raion-label', 'text-color', ['case', on, '#4b5563', '#b3b9c2']);
-  map.setFilter('enabled-outline', on);
-  if (enabledBounds && !hadHash) map.fitBounds(enabledBounds, { padding: 40, duration: 0 });
 }
 async function loadGeo() {
   const g = await (await fetch('/data/raions.geojson')).json();
-  const b = [[Infinity, Infinity], [-Infinity, -Infinity]];
-  for (const f of g.features) {
-    raionNames[f.properties.id] = f.properties.name; featureIds.push(f.properties.id);
-    if (!isEnabled(f.properties.id)) continue;
-    const polys = f.geometry.type === 'MultiPolygon' ? f.geometry.coordinates : [f.geometry.coordinates];
-    for (const poly of polys) for (const [x, y] of poly[0]) {
-      b[0][0] = Math.min(b[0][0], x); b[0][1] = Math.min(b[0][1], y); b[1][0] = Math.max(b[1][0], x); b[1][1] = Math.max(b[1][1], y);
-    }
-  }
-  if (isFinite(b[0][0])) enabledBounds = b;
+  for (const f of g.features) { raionNames[f.properties.id] = f.properties.name; featureIds.push(f.properties.id); }
 }
 async function poll() {
   try {
@@ -315,7 +318,7 @@ function intensities(now) {
   const I = {}, color = {}, cleared = {}, clearedAt = {};
   for (const e of events) if (e.kind === 'clear') { const t = +new Date(e.ts); if (t <= now) clearedAt[e.raion] = Math.max(clearedAt[e.raion] || 0, t); }
   for (const e of events) {
-    if (e.kind === 'clear' || !isEnabled(e.raion)) continue;
+    if (e.kind === 'clear') continue;
     const t = +new Date(e.ts);
     if (t > now || t <= (clearedAt[e.raion] || 0)) continue;
     const tau = (TAU[e.kind] || 25) * 60000;
@@ -355,10 +358,6 @@ function renderFeed() {
 const popup = new maplibregl.Popup({ closeButton:false, closeOnClick:false });
 map.on('mousemove', 'raion-fill', e => {
   const f = e.features[0]; const id = f.properties.id;
-  if (!isEnabled(id)) {
-    popup.setLngLat(e.lngLat).setHTML(`<b>${f.properties.name}</b> <span class="soon-tag">незабаром</span><div class="muted" style="margin-top:4px">Поки що показуємо лише ${document.getElementById('scopeName').textContent}.</div>`).addTo(map);
-    return;
-  }
   const now = Date.now() + liveOffsetMin * 60000;
   const recent = events.filter(x => x.raion === id && x.role !== 'area' && +new Date(x.ts) <= now).slice(-3).reverse();
   const lines = recent.map(x => `<div><span class="muted">${fmtTime(x.ts)}</span> ${clean(x.text)}</div>`).join('');
@@ -369,7 +368,6 @@ map.on('mouseleave', 'raion-fill', () => popup.remove());
 (async () => {
   await loadConfig(); await loadGeo();
   await poll();
-  if (map.loaded()) applyEnabled(); else map.on('load', applyEnabled);
   map.on('load', render);
   setInterval(render, 1000);
   setInterval(poll, 10000);
