@@ -1,7 +1,8 @@
 # Air-alert map of Ukraine by район
 
-Live map of the whole country: each район glows red when @war_monitor reports a threat there and fades as the
-threat passes. All 136 post-2020 raions are live, Kyiv is split into its 10 city districts, plus Sevastopol.
+Live map: each район glows red when @war_monitor reports a threat there and fades as the threat passes.
+Alerts are currently limited to Kyiv (its 10 city districts) and Kyiv oblast (7 raions); the rest of the
+country is drawn greyed out as "coming soon".
 
 ## Run
 
@@ -34,10 +35,15 @@ every 10 s). For the MTProto source copy `.env.example` to `.env`, fill `TG_API_
 
 ## Coverage
 
-The whole country is live: every raion in `public/data/raions.geojson` (136 raions, Kyiv's 10 city districts,
-Sevastopol) reacts to events, and the API returns events for all of them — there is no per-region gate any more.
-Kyiv keeps its finer granularity: neighbourhood names in `data/aliases.json` resolve to a city district, and a
-"Київ:" message with no recognisable neighbourhood lights all 10 districts at half weight.
+Users only get alerts for the oblasts in `ENABLED_OBLASTS` (comma-separated KATOTTG oblast prefixes, default
+`UA80,UA32` = Kyiv city + Kyiv oblast); `ENABLED_LABEL` (default `Київ і область`) is the name shown in the panel.
+`/api/config` serves both to the page. The parser and the API still cover the whole country — the gate is applied
+in the browser, so widening it is an env change plus a redeploy, no reparse.
+
+Everything outside the gate is drawn grey, labelled faintly and says "незабаром" on hover; the map opens zoomed
+to the enabled area unless the URL carries a `#zoom/lat/lng` hash. Kyiv keeps its finer granularity: neighbourhood
+names in `data/aliases.json` resolve to a city district, and a "Київ:" message with no recognisable neighbourhood
+lights all 10 districts at half weight.
 
 The map labels oblasts below zoom 6.2 and raions above it; the "назви" checkbox toggles both.
 

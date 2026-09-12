@@ -13,6 +13,9 @@ from ingest.parser import ROLE_WEIGHT, TAU_MIN
 ROOT = Path(__file__).resolve().parent.parent
 CHANNEL = os.environ.get("TG_CHANNEL", "war_monitor")
 CDN_CACHE = "public, s-maxage=10, stale-while-revalidate=30"
+# Alerts are shown only for these KATOTTG oblast prefixes; the rest of the map stays grey ("coming soon").
+ENABLED_OBLASTS = [c.strip() for c in os.environ.get("ENABLED_OBLASTS", "UA80,UA32").split(",") if c.strip()]
+ENABLED_LABEL = os.environ.get("ENABLED_LABEL", "Київ і область")
 
 
 def _now() -> datetime:
@@ -24,7 +27,8 @@ def create_app(stateless: bool) -> FastAPI:
 
     @app.get("/api/config")
     def config():
-        return {"tau_min": TAU_MIN, "role_weight": ROLE_WEIGHT, "channel": CHANNEL, "mode": "stateless" if stateless else "store"}
+        return {"tau_min": TAU_MIN, "role_weight": ROLE_WEIGHT, "channel": CHANNEL, "mode": "stateless" if stateless else "store",
+                "enabled_oblasts": ENABLED_OBLASTS, "enabled_label": ENABLED_LABEL}
 
     if stateless:
         from ingest import webfeed
