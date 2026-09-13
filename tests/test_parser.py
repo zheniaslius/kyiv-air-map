@@ -8,7 +8,9 @@ KYIV_ALL = {"UA80000000000126643", "UA80000000000980793", "UA80000000000875983",
 BROVARY = "UA32060000000012455"
 BORYSPIL = "UA32040000000054694"
 VYSHHOROD = "UA32100000000065867"
-ODESA = "UA51100000000095786"
+ODESA = "UA51100000000095786"  # Одеський район, i.e. the suburbs once the city is cut out
+PRYMORSKYI_ODESA = "UA51100270010320268"
+ODESA_ALL = {"UA51100270010196805", "UA51100270010275193", PRYMORSKYI_ODESA, "UA51100270010413116"}
 DNIPRO = "UA12020000000052809"
 
 p = Parser()
@@ -47,7 +49,7 @@ def test_unknown_named_feature_is_dropped():
 
 @pytest.mark.parametrize("text, raion", [
     ("Одещина:\n⚠️ 6х БпЛА Ізмаїльський район.", "UA51080000000061776"),
-    ("⚠️ Одеса - БпЛА з моря", ODESA),
+    ("Одещина:\n🅿️1х реактив Усатове.", ODESA),
     ("🅿️Харків 1х мгКР Бандероль", "UA63120000000091135"),
     ("Харківщина:\n⚠️ 4х БпЛА Герань-2 сектор Балаклія.", "UA63040000000023521"),
     ("🅿️Суми 2х реактива на місто", "UA59080000000057897"),
@@ -85,8 +87,20 @@ def test_kyiv_declension():
 
 def test_kryvyi_rih_alternation():
     evs = ev("🅿️1х реактив від Кривого Рогу у напрямку Одеса.")
-    assert {e.role for e in evs} >= {"origin", "target"}
-    assert ODESA in raions(evs, roles=("target",))
+    assert {e.role for e in evs} >= {"origin", "city"}
+    assert raions(evs, roles=("city",)) == ODESA_ALL
+
+
+def test_odesa_mention_spreads_over_its_districts():
+    evs = ev("🔄 1х реактив над Одесою.")
+    assert raions(evs, roles=("city",)) == ODESA_ALL and all(e.weight == 0.5 for e in evs)
+    assert raions(ev("Одеса: 🅿️ 2х реактиви на місто"), roles=("city",)) == ODESA_ALL  # header default
+
+
+def test_odesa_clear_suburbs_and_district():
+    assert {e.raion for e in ev("Одеса чисто.") if e.kind == "clear"} == ODESA_ALL
+    assert raions(ev("Одещина:\n🅿️1х реактив на Чорноморськ"), roles=("target",)) == {ODESA}
+    assert raions(ev("Одещина:\n⚠️ 2х БпЛА у Приморському районі Одеси.")) == {PRYMORSKYI_ODESA}
 
 
 def test_clear_then_threat_same_message():

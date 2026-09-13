@@ -15,6 +15,7 @@ from typing import Optional
 
 DATA = Path(__file__).resolve().parent.parent / "data"
 KYIV = "UA80000000000093317"  # aggregate id: expands to all Kyiv city districts (oblast UA80)
+ODESA = "UA51100270010076757"  # aggregate id: expands to Odesa's 4 city districts (inside Одеський район)
 
 # ---------------------------------------------------------------- config
 # Fade time constants in minutes, per threat kind. Tune freely.
@@ -26,7 +27,7 @@ TAU_MIN = {
     "bomb": 8,        # КАБ / УМПБ
 }
 ROLE_WEIGHT = {"current": 1.0, "target": 0.6, "origin": 0.3, "area": 0.25, "city": 0.5}
-# "city": whole-Kyiv mention with no district resolved -> every Kyiv district at half weight
+# "city": whole-city mention (Kyiv, Odesa) with no district resolved -> every district of that city at half weight
 
 KIND_RX = [
     ("jet", r"реактив|сікер"),
@@ -133,6 +134,11 @@ class Gazetteer:
         self.by_oblast: dict[str, list[str]] = defaultdict(list)
         for r in self.raions.values():
             self.by_oblast[r["oblast"]].append(r["id"])
+        # split city aggregate id -> its districts (raions.json "city_id"); the city itself has no polygon
+        self.city_districts: dict[str, list[str]] = defaultdict(list)
+        for r in self.raions.values():
+            if r.get("city_id"):
+                self.city_districts[r["city_id"]].append(r["id"])
         # raion adjective stem -> id  ("Броварський район" -> "броварськ")
         self.raion_adj: dict[str, list[str]] = defaultdict(list)
         for r in self.raions.values():
@@ -214,6 +220,9 @@ class Parser:
         if re.search(r"\bкиїв\b|києв|київ/", head):
             scope |= {"UA80", "UA32"}
             default = KYIV
+        elif re.search(r"\bодес(?:а|и|і|у|ою)\b", head):  # Одеса:, not Одещина: / Одеська область:
+            scope.add("UA51")
+            default = ODESA
         for code in self.oblasts_in(head):
             scope.add(code)
         if "загально" in head or not scope:
@@ -300,16 +309,16 @@ class Parser:
                 continue
             if CLEAR_RX.search(norm(line)):
                 targets: set[str] = set()
-                if default == KYIV or re.search(r"\bкиїв\b|\bкиєв", norm(line)):
-                    targets.update(self.g.by_oblast["UA80"])
-                elif default:
-                    targets.add(default)
+                if re.search(r"\bкиїв\b|\bкиєв", norm(line)):
+                    targets.update(self.g.city_districts[KYIV])
+                if default:
+                    targets.update(self.g.city_districts.get(default) or [default])
                 for code in self.oblasts_in(line) + (list(scope or []) if not self.oblasts_in(line) else []):
                     targets.update(self.g.by_oblast.get(code, []))
                 if re.search(r"\bобласть\b", norm(line)) and KYIV in targets:
                     targets.update(self.g.by_oblast["UA32"])
                 for rid, role, _ in self.places_in_line(line, scope):
-                    targets.update(self.g.by_oblast["UA80"] if rid == KYIV else [rid])
+                    targets.update(self.g.city_districts.get(rid) or [rid])
                 events += [Event(ts, msg_id, r, "clear", "clear", 0.0, 0, line[:200]) for r in sorted(targets)]
                 continue
             kind = self.kind_of(line)
@@ -323,8 +332,8 @@ class Parser:
                 hits = [(default, "current", "header")]
             expanded = []
             for rid, role, name in hits:
-                if rid == KYIV:
-                    expanded += [(d, "city", name) for d in self.g.by_oblast["UA80"]]
+                if rid in self.g.city_districts:
+                    expanded += [(d, "city", name) for d in self.g.city_districts[rid]]
                 else:
                     expanded.append((rid, role, name))
             hits = expanded

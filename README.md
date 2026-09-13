@@ -1,8 +1,8 @@
 # Air-alert map of Ukraine by район
 
 Live map: each район glows red when @war_monitor reports a threat there and fades as the threat passes.
-Alerts are currently limited to Kyiv (its 10 city districts) and the Kyiv, Odesa, Kharkiv, Sumy and Chernihiv
-oblasts (31 raions); the rest of the country is drawn greyed out as "coming soon".
+Alerts are currently limited to Kyiv (its 10 city districts), Odesa (its 4 city districts) and the Kyiv, Odesa,
+Kharkiv, Sumy and Chernihiv oblasts (31 raions); the rest of the country is drawn greyed out as "coming soon".
 
 ## Run
 
@@ -27,11 +27,11 @@ every 10 s). For the MTProto source copy `.env.example` to `.env`, fill `TG_API_
 | `server/main.py` | local server: store + poller + serves `public/` |
 | `api/index.py` | Vercel serverless entrypoint (stateless backend); `vercel.json` rewrites `/api/*` here |
 | `public/index.html` | MapLibre map; fade computed client-side every second |
-| `public/data/raions.geojson` | 136 post-2020 raions + 10 Kyiv city districts + Sevastopol (OSM, simplified) |
+| `public/data/raions.geojson` | 136 post-2020 raions + 10 Kyiv and 4 Odesa city districts + Sevastopol (OSM, simplified; Одеський район has the city cut out) |
 | `public/data/oblasts.geojson` | 27 oblast outlines with `name`, drawn as the thicker borders |
 | `public/data/oblast-labels.geojson` | one label anchor per oblast, shown below zoom 6.2; regenerate with `python scripts/oblast_label_points.py` |
 | `data/places.json` | 29k settlements → raion via KATOTTG code (OSM) |
-| `data/aliases.json` | name → raion overrides; ~680 Kyiv neighbourhoods → city district, generated from OSM points |
+| `data/aliases.json` | name → raion overrides; ~680 Kyiv neighbourhoods → city district, generated from OSM points, plus Odesa's main neighbourhoods (OSM points geocoded via Nominatim) |
 
 ## Coverage
 
@@ -43,9 +43,13 @@ fallback before `/api/config` answers, in `public/index.html`; Vercel sets neith
 in the browser, so widening it is an env change plus a redeploy, no reparse.
 
 Everything outside the gate is drawn grey, labelled faintly and says "незабаром" on hover; the map opens zoomed
-to the enabled area unless the URL carries a `#zoom/lat/lng` hash. Kyiv keeps its finer granularity: neighbourhood
-names in `data/aliases.json` resolve to a city district, and a "Київ:" message with no recognisable neighbourhood
-lights all 10 districts at half weight.
+to the enabled area unless the URL carries a `#zoom/lat/lng` hash.
+
+Kyiv and Odesa are split into city districts: neighbourhood names in `data/aliases.json` resolve to a district, and
+a message naming the city with no recognisable neighbourhood ("Київ:", "над Одесою") lights all of its districts
+(10 in Kyiv, 4 in Odesa) at half weight. A district belongs to its city through `city_id` in `data/raions.json`, which
+the parser expands the city's aggregate id into. Odesa's districts (Київський, Пересипський, Приморський,
+Хаджибейський) are cut out of Одеський район, which keeps the rest of its territory (Чорноморськ, Південне, …).
 
 The map labels oblasts below zoom 6.2 and raions above it; the "назви" checkbox toggles both.
 
@@ -59,8 +63,8 @@ Vercel GitHub integration. Manual: `vercel deploy --prod`.
 ## Tuning
 
 Fade constants live in `TAU_MIN` in `ingest/parser.py` (minutes): jet 15, uav 25, cruise 10, ballistic 8, bomb 8.
-Role weights in `ROLE_WEIGHT`: current 1.0, target 0.6, origin 0.3, whole-oblast mention 0.25, whole-Kyiv mention 0.5
-(a "Київ:" message whose place is not a known neighbourhood lights all 10 city districts at half weight).
+Role weights in `ROLE_WEIGHT`: current 1.0, target 0.6, origin 0.3, whole-oblast mention 0.25, whole-city mention 0.5
+(a Kyiv or Odesa mention whose place is not a known neighbourhood lights all of that city's districts at half weight).
 Intensity per raion = Σ weight × count-factor × exp(−age/τ), clamped to 1. A "чисто / відбій" message zeroes the raion
 and flashes it green for 10 min.
 

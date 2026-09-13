@@ -142,7 +142,7 @@
 <div id="about" hidden><div class="card">
   <h2>Як це працює</h2>
   <p>Карта показує, де за повідомленнями каналу <b id="about-src">@war_monitor</b> нещодавно бачили повітряні цілі.</p>
-  <p>Поки що працюють <b id="about-scope">Київ і 5 областей</b>: 10 міських районів Києва та 31 район Київської, Одеської, Харківської, Сумської і Чернігівської областей. Решта країни показана сірим і з'явиться згодом.</p>
+  <p>Поки що працюють <b id="about-scope">Київ і 5 областей</b>: 10 міських районів Києва, 4 міські райони Одеси та 31 район Київської, Одеської, Харківської, Сумської і Чернігівської областей. Решта країни показана сірим і з'явиться згодом.</p>
   <p>Район стає <b style="color:var(--accent)">червоним</b>, коли про нього пишуть, і поступово блідне сам: дрони — приблизно за годину, ракети — за півгодини.</p>
   <p>Після «чисто» або «відбою» район гасне і ненадовго стає <b style="color:var(--ok)">зеленим</b>.</p>
   <p>Наведіть курсор на район, щоб побачити останні повідомлення. Повзунок «Час» відмотує назад.</p>
@@ -162,7 +162,7 @@
     </section>
     <section>
       <h3>Охоплення</h3>
-      <p>Наразі Київ (10 міських районів) і 31 район Київської, Одеської, Харківської, Сумської та Чернігівської областей. Решта областей видно на карті сірим — вони підключаються поступово.</p>
+      <p>Наразі Київ (10 міських районів), Одеса (4 міські райони) і 31 район Київської, Одеської, Харківської, Сумської та Чернігівської областей. Решта областей видно на карті сірим — вони підключаються поступово.</p>
     </section>
     <section>
       <h3>Джерело даних</h3>
@@ -173,7 +173,8 @@
     <h3>Райони, які працюють зараз</h3>
     <p>Київ: Голосіївський, Дарницький, Деснянський, Дніпровський, Оболонський, Печерський, Подільський,
       Святошинський, Солом'янський, Шевченківський. Київська область: Бориспільський, Броварський, Бучанський,
-      Білоцерківський, Вишгородський, Обухівський, Фастівський райони. Одеська область: Березівський,
+      Білоцерківський, Вишгородський, Обухівський, Фастівський райони. Одеса: Київський, Пересипський,
+      Приморський, Хаджибейський райони. Одеська область: Березівський,
       Білгород-Дністровський, Болградський, Ізмаїльський, Одеський, Подільський, Роздільнянський райони.
       Харківська область: Берестинський, Богодухівський, Ізюмський, Куп'янський, Лозівський, Харківський,
       Чугуївський райони. Сумська область: Конотопський, Охтирський, Роменський, Сумський, Шосткинський райони.
@@ -197,6 +198,7 @@ const seenIds = new Set();
 let lastTs = null;
 let liveOffsetMin = 0;
 let raionNames = {};
+let cityOf = {};  // district id -> its city, for split cities other than Kyiv (Odesa)
 let featureIds = [];
 let ENABLED = ['UA80', 'UA32', 'UA51', 'UA59', 'UA63', 'UA74'];  // oblast codes users get alerts for; the rest of the map is "coming soon"
 let enabledBounds = null;
@@ -325,6 +327,7 @@ async function loadGeo() {
   const b = [[Infinity, Infinity], [-Infinity, -Infinity]];
   for (const f of g.features) {
     raionNames[f.properties.id] = f.properties.name; featureIds.push(f.properties.id);
+    if (f.properties.city) cityOf[f.properties.id] = f.properties.city;
     if (!isEnabled(f.properties.id)) continue;
     const polys = f.geometry.type === 'MultiPolygon' ? f.geometry.coordinates : [f.geometry.coordinates];
     for (const poly of polys) for (const [x, y] of poly[0]) {
@@ -386,23 +389,38 @@ function renderFeed() {
   for (const e of events) {
     if (!byMsg.has(e.msg_id)) byMsg.set(e.msg_id, { ts:e.ts, text:e.text, raions:new Set(), kind:e.kind });
     const m = byMsg.get(e.msg_id);
-    if (e.role === 'city') m.raions.add('Київ'); else if (e.role !== 'area') m.raions.add((raionNames[e.raion] || e.raion).replace(' район', ''));
+    const district = (raionNames[e.raion] || e.raion).replace(' район', '');
+    if (e.role === 'city') m.raions.add(cityOf[e.raion] || 'Київ');
+    else if (e.role !== 'area') m.raions.add(cityOf[e.raion] ? `${cityOf[e.raion]}|${district}` : district);
   }
   document.getElementById('feedItems').innerHTML = [...byMsg.values()].slice(-25).reverse().map(m =>
-    `<div class="item"><div class="meta"><span class="k" style="background:${KIND_COLOR[m.kind]}"></span>${fmtTime(m.ts)} · ${KIND_NAME[m.kind] || m.kind} · ${[...m.raions].join(', ')}</div>${clean(m.text)}</div>`).join('');
+    `<div class="item"><div class="meta"><span class="k" style="background:${KIND_COLOR[m.kind]}"></span>${fmtTime(m.ts)} · ${KIND_NAME[m.kind] || m.kind} · ${placesLabel(m.raions)}</div>${clean(m.text)}</div>`).join('');
+}
+// "Одеса|Приморський" entries are grouped per city: "Одеса (Приморський, Пересипський)"; a bare "Одеса" is then redundant
+function placesLabel(places) {
+  const plain = [], byCity = new Map();
+  for (const p of places) {
+    const i = p.indexOf('|');
+    if (i < 0) { plain.push(p); continue; }
+    const city = p.slice(0, i);
+    if (!byCity.has(city)) byCity.set(city, []);
+    byCity.get(city).push(p.slice(i + 1));
+  }
+  return [...plain.filter(p => !byCity.has(p)), ...[...byCity].map(([city, ds]) => `${city} (${ds.join(', ')})`)].join(', ');
 }
 
 const popup = new maplibregl.Popup({ closeButton:false, closeOnClick:false });
 map.on('mousemove', 'raion-fill', e => {
   const f = e.features[0]; const id = f.properties.id;
+  const title = f.properties.city ? `${f.properties.name}, ${f.properties.city}` : f.properties.name;
   if (!isEnabled(id)) {
-    popup.setLngLat(e.lngLat).setHTML(`<b>${f.properties.name}</b> <span class="soon-tag">незабаром</span><div class="muted" style="margin-top:4px">Поки що показуємо лише ${document.getElementById('scopeName').textContent}.</div>`).addTo(map);
+    popup.setLngLat(e.lngLat).setHTML(`<b>${title}</b> <span class="soon-tag">незабаром</span><div class="muted" style="margin-top:4px">Поки що показуємо лише ${document.getElementById('scopeName').textContent}.</div>`).addTo(map);
     return;
   }
   const now = Date.now() + liveOffsetMin * 60000;
   const recent = events.filter(x => x.raion === id && x.role !== 'area' && +new Date(x.ts) <= now).slice(-3).reverse();
   const lines = recent.map(x => `<div><span class="muted">${fmtTime(x.ts)}</span> ${clean(x.text)}</div>`).join('');
-  popup.setLngLat(e.lngLat).setHTML(`<b>${f.properties.name}</b>${lines ? '<div style="margin-top:4px">' + lines + '</div>' : '<div class="muted">повідомлень немає</div>'}`).addTo(map);
+  popup.setLngLat(e.lngLat).setHTML(`<b>${title}</b>${lines ? '<div style="margin-top:4px">' + lines + '</div>' : '<div class="muted">повідомлень немає</div>'}`).addTo(map);
 });
 map.on('mouseleave', 'raion-fill', () => popup.remove());
 
