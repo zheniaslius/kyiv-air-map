@@ -7,7 +7,8 @@ deployed on Vercel (static site + one stateless Python function).
 Coverage: the map draws the whole country (oblasts labelled zoomed out, raions zoomed in), but alerts are gated
 to `ENABLED_OBLASTS`: `UA80,UA32` (Kyiv city + Kyiv oblast) as of 2026-09-12, widened on 2026-09-13 to add
 Odesa, Sumy, Kharkiv and Chernihiv oblasts (`UA51,UA59,UA63,UA74`), with Odesa city split into its 4 districts
-like Kyiv; the rest is grey "coming soon".
+like Kyiv, then Dnipropetrovsk, Zaporizhzhia and Mykolaiv oblasts (`UA12,UA23,UA48`) the same day; the rest is grey
+"coming soon".
 Open: Telegram MTProto source needs your api_id/api_hash; alerts.in.ua layer deferred.
 Known parser gaps: typos in place names ("Переслав"), offshore launches (Чорне море — now dropped rather than
 mis-pinned, but still no raion), Moldova mentions, "той самий маршрут" follow-ups.
