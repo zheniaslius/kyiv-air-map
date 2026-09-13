@@ -5,7 +5,8 @@ Phases 0–5 are built and running (see README.md): corpus of 1187 messages, 147
 raion coverage on the corpus with 10 regression tests, SQLite store, web-preview poller, FastAPI, MapLibre UI,
 deployed on Vercel (static site + one stateless Python function).
 Coverage: the map draws the whole country (oblasts labelled zoomed out, raions zoomed in), but alerts are gated
-to `ENABLED_OBLASTS`, back to `UA80,UA32` (Kyiv city + Kyiv oblast) as of 2026-09-12; the rest is grey "coming soon".
+to `ENABLED_OBLASTS`: `UA80,UA32` (Kyiv city + Kyiv oblast) as of 2026-09-12, widened on 2026-09-13 to add
+Odesa, Sumy, Kharkiv and Chernihiv oblasts (`UA51,UA59,UA63,UA74`); the rest is grey "coming soon".
 Open: Telegram MTProto source needs your api_id/api_hash; alerts.in.ua layer deferred.
 Known parser gaps: typos in place names ("Переслав"), offshore launches (Чорне море — now dropped rather than
 mis-pinned, but still no raion), Moldova mentions, "той самий маршрут" follow-ups.

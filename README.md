@@ -1,8 +1,8 @@
 # Air-alert map of Ukraine by район
 
 Live map: each район glows red when @war_monitor reports a threat there and fades as the threat passes.
-Alerts are currently limited to Kyiv (its 10 city districts) and Kyiv oblast (7 raions); the rest of the
-country is drawn greyed out as "coming soon".
+Alerts are currently limited to Kyiv (its 10 city districts) and the Kyiv, Odesa, Kharkiv, Sumy and Chernihiv
+oblasts (31 raions); the rest of the country is drawn greyed out as "coming soon".
 
 ## Run
 
@@ -36,7 +36,9 @@ every 10 s). For the MTProto source copy `.env.example` to `.env`, fill `TG_API_
 ## Coverage
 
 Users only get alerts for the oblasts in `ENABLED_OBLASTS` (comma-separated KATOTTG oblast prefixes, default
-`UA80,UA32` = Kyiv city + Kyiv oblast); `ENABLED_LABEL` (default `Київ і область`) is the name shown in the panel.
+`UA80,UA32,UA51,UA59,UA63,UA74` = Kyiv city + Kyiv, Odesa, Sumy, Kharkiv and Chernihiv oblasts); `ENABLED_LABEL`
+(default `Київ і 5 областей`) is the name shown in the panel. The defaults live in `server/app.py` and, as a
+fallback before `/api/config` answers, in `public/index.html`; Vercel sets neither variable, so the defaults are live.
 `/api/config` serves both to the page. The parser and the API still cover the whole country — the gate is applied
 in the browser, so widening it is an env change plus a redeploy, no reparse.
 

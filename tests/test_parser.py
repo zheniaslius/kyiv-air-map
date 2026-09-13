@@ -45,6 +45,21 @@ def test_unknown_named_feature_is_dropped():
     assert raions(ev("Одещина:\n⚠️ 2х БпЛА з Чорного моря у напрямку Одеси"), roles=("origin",)) == set()
 
 
+@pytest.mark.parametrize("text, raion", [
+    ("Одещина:\n⚠️ 6х БпЛА Ізмаїльський район.", "UA51080000000061776"),
+    ("⚠️ Одеса - БпЛА з моря", ODESA),
+    ("🅿️Харків 1х мгКР Бандероль", "UA63120000000091135"),
+    ("Харківщина:\n⚠️ 4х БпЛА Герань-2 сектор Балаклія.", "UA63040000000023521"),
+    ("🅿️Суми 2х реактива на місто", "UA59080000000057897"),
+    ("⚠️ 3х БпЛА Герань-2 сектор Охтирка", "UA59040000000045652"),
+    ("🅿️ Чернігів — мгКР Бандероль", "UA74100000000047140"),
+    ("🅿️ 2х мгКР Бандероль повз Срібне", "UA74080000000030554"),
+])
+def test_enabled_oblasts_resolve(text, raion):
+    """The oblasts switched on after Kyiv (Odesa, Kharkiv, Sumy, Chernihiv) land in the right raion."""
+    assert raions(ev(text)) == {raion}
+
+
 def test_oblast_header_town():
     assert raions(ev("Київщина:\n🅿️1х реактив Бровари")) == {BROVARY}
 

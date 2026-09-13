@@ -14,8 +14,8 @@ ROOT = Path(__file__).resolve().parent.parent
 CHANNEL = os.environ.get("TG_CHANNEL", "war_monitor")
 CDN_CACHE = "public, s-maxage=10, stale-while-revalidate=30"
 # Alerts are shown only for these KATOTTG oblast prefixes; the rest of the map stays grey ("coming soon").
-ENABLED_OBLASTS = [c.strip() for c in os.environ.get("ENABLED_OBLASTS", "UA80,UA32").split(",") if c.strip()]
-ENABLED_LABEL = os.environ.get("ENABLED_LABEL", "Київ і область")
+ENABLED_OBLASTS = [c.strip() for c in os.environ.get("ENABLED_OBLASTS", "UA80,UA32,UA51,UA59,UA63,UA74").split(",") if c.strip()]
+ENABLED_LABEL = os.environ.get("ENABLED_LABEL", "Київ і 5 областей")
 
 
 def _now() -> datetime:

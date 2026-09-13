@@ -2,25 +2,25 @@
 <html lang="uk">
 <head>
 <meta charset="utf-8">
-<title>Карта повітряних цілей у Києві та області | Останні повідомлення по районах</title>
+<title>Карта повітряних цілей: Київ, Одеса, Харків, Суми, Чернігів | Останні повідомлення по районах</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Інтерактивна карта останніх повідомлень про повітряні цілі в районах Києва та Київської області. Дані автоматично аналізуються з публічних повідомлень та не замінюють офіційні сповіщення про повітряну тривогу.">
+<meta name="description" content="Інтерактивна карта останніх повідомлень про повітряні цілі в районах Києва, Київської, Одеської, Харківської, Сумської та Чернігівської областей. Дані автоматично аналізуються з публічних повідомлень та не замінюють офіційні сповіщення про повітряну тривогу.">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 <link rel="canonical" href="https://kyiv-air-map.vercel.app/">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="uk_UA">
 <meta property="og:site_name" content="Карта повітряних цілей">
-<meta property="og:title" content="Карта повітряних цілей у Києві та області">
-<meta property="og:description" content="Інтерактивна карта останніх повідомлень про повітряні цілі в районах Києва та Київської області.">
+<meta property="og:title" content="Карта повітряних цілей: Київ, Одеса, Харків, Суми, Чернігів">
+<meta property="og:description" content="Інтерактивна карта останніх повідомлень про повітряні цілі в районах Києва, Київської, Одеської, Харківської, Сумської та Чернігівської областей.">
 <meta property="og:url" content="https://kyiv-air-map.vercel.app/">
 <meta property="og:image" content="https://kyiv-air-map.vercel.app/social-preview.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Карта повітряних цілей у Києві та області">
+<meta property="og:image:alt" content="Карта повітряних цілей: Київ, Одеса, Харків, Суми, Чернігів">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Карта повітряних цілей у Києві та області">
-<meta name="twitter:description" content="Інтерактивна карта останніх повідомлень про повітряні цілі в районах Києва та Київської області.">
+<meta name="twitter:title" content="Карта повітряних цілей: Київ, Одеса, Харків, Суми, Чернігів">
+<meta name="twitter:description" content="Інтерактивна карта останніх повідомлень про повітряні цілі в районах Києва, Київської, Одеської, Харківської, Сумської та Чернігівської областей.">
 <meta name="twitter:image" content="https://kyiv-air-map.vercel.app/social-preview.png">
 <script type="application/ld+json">
 {
@@ -29,8 +29,15 @@
   "name": "Карта повітряних цілей",
   "url": "https://kyiv-air-map.vercel.app/",
   "inLanguage": "uk-UA",
-  "description": "Інтерактивна карта останніх повідомлень про повітряні цілі в районах Києва та Київської області.",
-  "about": { "@type": "Place", "name": "Київ і Київська область" }
+  "description": "Інтерактивна карта останніх повідомлень про повітряні цілі в районах Києва, Київської, Одеської, Харківської, Сумської та Чернігівської областей.",
+  "about": [
+    { "@type": "Place", "name": "Київ" },
+    { "@type": "Place", "name": "Київська область" },
+    { "@type": "Place", "name": "Одеська область" },
+    { "@type": "Place", "name": "Харківська область" },
+    { "@type": "Place", "name": "Сумська область" },
+    { "@type": "Place", "name": "Чернігівська область" }
+  ]
 }
 </script>
 <link href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
@@ -107,14 +114,14 @@
 </head>
 <body>
 <main>
-<section id="map-shell" aria-label="Інтерактивна карта повітряних цілей у районах Києва та області">
+<section id="map-shell" aria-label="Інтерактивна карта повітряних цілей у районах Києва та п'яти областей">
 <div id="map"></div>
 
 <div id="panel" class="card win">
   <div class="win-head"><h1>Повітряні цілі по районах</h1><button class="win-btn" type="button" title="Згорнути" aria-expanded="true" aria-controls="panelBody"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 4.5 6 8l3.5-3.5"/></svg></button></div>
   <div class="win-body" id="panelBody">
   <div class="sub">за повідомленнями <span id="src">@war_monitor</span></div>
-  <div id="scope"><span class="pill" id="scopeName">Київ і область</span><span class="note">інші області — незабаром</span></div>
+  <div id="scope"><span class="pill" id="scopeName">Київ і 5 областей</span><span class="note">решта — незабаром</span></div>
   <div class="row"><span class="muted">Останнє повідомлення</span><span id="lastmsg">—</span></div>
   <div class="row"><span class="muted">Зв'язок</span><span><span class="dot" id="dot"></span><span id="lastpoll">—</span></span></div>
   <div class="row"><span class="muted">Районів з цілями</span><span id="active">0</span></div>
@@ -135,7 +142,7 @@
 <div id="about" hidden><div class="card">
   <h2>Як це працює</h2>
   <p>Карта показує, де за повідомленнями каналу <b id="about-src">@war_monitor</b> нещодавно бачили повітряні цілі.</p>
-  <p>Поки що працюють <b id="about-scope">Київ і область</b>: 10 міських районів Києва та 7 районів Київщини. Решта країни показана сірим і з'явиться згодом.</p>
+  <p>Поки що працюють <b id="about-scope">Київ і 5 областей</b>: 10 міських районів Києва та 31 район Київської, Одеської, Харківської, Сумської і Чернігівської областей. Решта країни показана сірим і з'явиться згодом.</p>
   <p>Район стає <b style="color:var(--accent)">червоним</b>, коли про нього пишуть, і поступово блідне сам: дрони — приблизно за годину, ракети — за півгодини.</p>
   <p>Після «чисто» або «відбою» район гасне і ненадовго стає <b style="color:var(--ok)">зеленим</b>.</p>
   <p>Наведіть курсор на район, щоб побачити останні повідомлення. Повзунок «Час» відмотує назад.</p>
@@ -146,8 +153,8 @@
 </section>
 
 <section id="seo-content" aria-labelledby="about-map-title">
-  <h2 id="about-map-title">Карта повідомлень про повітряні цілі в районах Києва та області</h2>
-  <p>Сервіс показує останні згадки про повітряні цілі в районах Києва та Київської області на основі автоматичного аналізу публічних повідомлень. Це довідковий інструмент для огляду повідомлень, а не офіційна система оповіщення.</p>
+  <h2 id="about-map-title">Карта повідомлень про повітряні цілі: Київ, Київщина, Одещина, Харківщина, Сумщина, Чернігівщина</h2>
+  <p>Сервіс показує останні згадки про повітряні цілі в районах Києва, Київської, Одеської, Харківської, Сумської та Чернігівської областей на основі автоматичного аналізу публічних повідомлень. Це довідковий інструмент для огляду повідомлень, а не офіційна система оповіщення.</p>
   <div class="seo-grid">
     <section>
       <h3>Що показує карта</h3>
@@ -155,7 +162,7 @@
     </section>
     <section>
       <h3>Охоплення</h3>
-      <p>Наразі Київ (10 міських районів) і 7 районів Київської області. Решта областей видно на карті сірим — вони підключаються поступово.</p>
+      <p>Наразі Київ (10 міських районів) і 31 район Київської, Одеської, Харківської, Сумської та Чернігівської областей. Решта областей видно на карті сірим — вони підключаються поступово.</p>
     </section>
     <section>
       <h3>Джерело даних</h3>
@@ -166,7 +173,12 @@
     <h3>Райони, які працюють зараз</h3>
     <p>Київ: Голосіївський, Дарницький, Деснянський, Дніпровський, Оболонський, Печерський, Подільський,
       Святошинський, Солом'янський, Шевченківський. Київська область: Бориспільський, Броварський, Бучанський,
-      Білоцерківський, Вишгородський, Обухівський, Фастівський райони. Інші області — незабаром.</p>
+      Білоцерківський, Вишгородський, Обухівський, Фастівський райони. Одеська область: Березівський,
+      Білгород-Дністровський, Болградський, Ізмаїльський, Одеський, Подільський, Роздільнянський райони.
+      Харківська область: Берестинський, Богодухівський, Ізюмський, Куп'янський, Лозівський, Харківський,
+      Чугуївський райони. Сумська область: Конотопський, Охтирський, Роменський, Сумський, Шосткинський райони.
+      Чернігівська область: Корюківський, Ніжинський, Новгород-Сіверський, Прилуцький, Чернігівський райони.
+      Інші області — незабаром.</p>
   </section>
   <section id="safety">
     <h3>Важливо</h3>
@@ -174,7 +186,7 @@
   </section>
 </section>
 </main>
-<footer id="site-footer">Карта повітряних цілей у Києві та області. Дані мають довідковий характер.</footer>
+<footer id="site-footer">Карта повітряних цілей у Києві та п'яти областях. Дані мають довідковий характер.</footer>
 
 <script>
 const KIND_COLOR = { jet:'#e5484d', uav:'#e5484d', cruise:'#e07b39', ballistic:'#8e4ec6', bomb:'#d9a21b', clear:'#30a46c' };
@@ -186,7 +198,7 @@ let lastTs = null;
 let liveOffsetMin = 0;
 let raionNames = {};
 let featureIds = [];
-let ENABLED = ['UA80', 'UA32'];  // oblast codes users get alerts for; the rest of the map is "coming soon"
+let ENABLED = ['UA80', 'UA32', 'UA51', 'UA59', 'UA63', 'UA74'];  // oblast codes users get alerts for; the rest of the map is "coming soon"
 let enabledBounds = null;
 const hadHash = !!location.hash; // a shared #zoom/lat/lng link wins over the default zoom-to-enabled-area
 const isEnabled = id => ENABLED.some(code => id.startsWith(code));
