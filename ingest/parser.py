@@ -80,12 +80,13 @@ OBLAST_ADJ_TOK = re.compile(r"[сцз]ьк(?:а|ої|ій|у|ою|і|их|им|�
 # "<adj> водосховище / море / ГЕС" is a named feature, not a settlement: on its own the adjective stems to a
 # city ("Київським" -> Київ) and would light it up. Known features map to the raion that holds them; the rest
 # are dropped rather than guessed at.
-FEATURE_NOUNS = ("водосховищ", "мор", "лиман", "затоц", "заток", "гес", "шосе")
+FEATURE_NOUNS = ("водосховищ", "мор", "лиман", "затоц", "заток", "гес", "шосе", "напрям")  # "з Черкаського напрямку"
 VYSHHOROD = "UA32100000000065867"
 FEATURES = {
     ("київськ", "водосховищ"): VYSHHOROD,  # Київське водосховище — north of the city, in Вишгородський район
     ("київськ", "мор"): VYSHHOROD,         # the channel also calls it "Київське море"
     ("київськ", "гес"): VYSHHOROD,
+    ("дніпровськ", "гес"): "UA23060070010228148",  # Дніпровська ГЕС (ДніпроГЕС): Дніпровський район of Zaporizhzhia
 }
 # "🟡 Жовтий рівень" / "🔴 Червоний рівень" (alert levels): the colour stems to a village (Жовте, Червоне). The pair
 # is skipped; putting the colours in STOP would also kill "Зелений Гай", "Червоний Яр", "Жовтий Яр".
@@ -189,13 +190,20 @@ class Gazetteer:
                 loc = words[:-1] + [words[-1][:-2] + "ці"]
                 for k in _product([stem_variants(w) for w in loc]):
                     self.places[" ".join(k)].append(cand + (True,))
+            # oblique cases of -ів names: stem() cuts Харків to "харк", but Харкова/Харкові/Харковом keep the "ов"
+            # ("харков"), so the о/е/є alternation of the full name is indexed too (Київ keeps its "їв" already)
+            last = norm(words[-1])
+            if last.endswith("ів") and len(last) > 4:
+                alts = [last[:-2] + v + "в" for v in "оеє"]
+                for k in _product([stem_variants(w) for w in words[:-1]] + [alts]):
+                    self.places[" ".join(k)].append(cand + (True,))
         alias_file = DATA / "aliases.json"
         if alias_file.exists():
             for name, rid in json.load(open(alias_file)).items():
                 for k in _product([stem_variants(w) for w in name.split()]):
                     self.places[" ".join(k)].append((5, 10**9, rid, name, rid[:4], False))
 
-    def lookup(self, key: str, scope: Optional[set[str]], keep=None) -> Optional[tuple]:
+    def lookup(self, key: str, scope: Optional[set[str]], keep=None, far: bool = True) -> Optional[tuple]:
         cands = self.places.get(key)
         if cands and keep:
             cands = [c for c in cands if keep(c)]
@@ -203,29 +211,34 @@ class Gazetteer:
             return None
         # a real name always beats a derived locative; a derived locative outside the header scope must be a town,
         # since "У Григорівці" alone could be any of dozens of villages
-        return (_pick([c for c in cands if not c[5]], scope, big_village=True)
-                or _pick([c for c in cands if c[5]], scope, big_village=False))
+        return (_pick([c for c in cands if not c[5]], scope, big_village=True, far=far)
+                or _pick([c for c in cands if c[5]], scope, big_village=False, far=far))
 
 
-def _pick(cands: list[tuple], scope: Optional[set[str]], big_village: bool) -> Optional[tuple]:
+def _pick(cands: list[tuple], scope: Optional[set[str]], big_village: bool, far: bool = True) -> Optional[tuple]:
     if not cands:
         return None
     real = [c for c in cands if c[0] < 5]
+    # a Kyiv header scope also covers Kyiv's districts, where the channel files them under "Київщина:"
+    wide = set(scope or ()) | ({"UA80"} if scope and "UA32" in scope else set())
     # a city-neighbourhood alias ("П'ятихатки" in Kyiv) speaks only for its own city: unless the header puts that
-    # city in scope, a real town of the same name (П'ятихатки, Dnipropetrovsk oblast) wins
-    if any(c[0] >= 3 for c in real) and not (scope and any(c[0] == 5 and c[4] in scope for c in cands)):
+    # city in scope, a substantial town of the same name (П'ятихатки, 19k) wins — a small one (Лісове, 1.3k) does
+    # not beat Kyiv's "Лісовий"
+    if (any(c[0] == 4 or (c[0] == 3 and c[1] >= 10000) for c in real)
+            and not any(c[0] == 5 and c[4] in wide for c in cands)):
         cands = real
     if scope:
-        scoped = [c for c in cands if c[4] in scope]
+        scoped = [c for c in cands if c[4] in scope or (c[0] == 5 and c[4] in wide)]
         if scoped:
             best = max(scoped, key=_size)
             # A header only scopes, it doesn't prove the place is local: "Миколаївщина: ... курсом на Київ" is the
             # capital, not a 17-person Київ in Вознесенський район. A small in-scope village (one that would not
-            # count outside scope) loses to a city elsewhere or to a town 20x its size; bigger villages such as
-            # frontline Кам'янське in Запорізька (2.6k) keep the local reading.
+            # count outside scope) loses to a city elsewhere, and on a target line ("у напрямку Карлівка") to a town
+            # 20x its size; a drone over a village under its own header ("Харківщина: Рубіжне") stays local, and
+            # bigger villages such as frontline Кам'янське in Запорізька (2.6k) keep the local reading.
             if best[0] <= 2 and best[1] < 1500:
                 big = [c for c in real if c[4] not in scope and
-                       (c[0] == 4 or (c[0] == 3 and c[1] >= 10000 and c[1] >= 20 * max(best[1], 1)))]
+                       (c[0] == 4 or (far and c[0] == 3 and c[1] >= 10000 and c[1] >= 20 * max(best[1], 1)))]
                 if big:
                     return max(big, key=_size)
             return best
@@ -296,10 +309,15 @@ class Parser:
             scope |= {"UA80", "UA32"}
             default = KYIV
         else:
-            city = self.city_header(m.group(1))  # "Одеса:", "Харків:" -> the city (its districts) and its oblast
-            if city:
-                scope.add(city[4])
-                default = city[2]
+            # "Одеса:", "Кривий Ріг:", also "м. Одеса:", "Одеса/Миколаїв:", "Харків і область:": the first town or city
+            # named sets the default (a split city: its districts), and every one adds its oblast to the scope
+            bare = re.sub(r"^\s*(?:м\.|місто)\s*", "", m.group(1))
+            bare = re.sub(r"(?:\s*,|\s+(?:і|та|й))\s+област\w*\s*$", "", bare)
+            for part in re.split(r"\s*(?:/|,|\s(?:та|і|й)\s)\s*", bare):
+                city = self.city_header(part) if part.strip() else None
+                if city:
+                    scope.add(city[4])
+                    default = default or city[2]
         for code in self.oblasts_in(head):
             scope.add(code)
         if "загально" in head or not scope:
@@ -337,15 +355,19 @@ class Parser:
         wide = set(scope or ()) | ({"UA80"} if scope and "UA32" in scope else set())
         for ok in (lambda x: after_city is not None and city_of(x) == after_city,
                    lambda x: oblast(x) in named,
-                   lambda x: city_of(x) in cities,
+                   lambda x: city_of(x) is not None and city_of(x) in cities,
                    lambda x: oblast(x) in wide and not city_of(x),
-                   lambda x: oblast(x) in wide,
-                   lambda x: not city_of(x),
-                   lambda x: oblast(x) == "UA80"):
+                   lambda x: oblast(x) in wide):
             rid = next((x for x in ids if ok(x)), None)
             if rid:
                 return rid
-        return ids[0]
+        # only districts of split cities, none in the header's oblast or of the city named after "район"
+        # ("Херсонщина: Корабельний район", "…районом Херсона"): a district of a city that isn't split
+        if all(city_of(x) for x in ids) and (scope or after_city is not None):
+            return None
+        return (next((x for x in ids if not city_of(x)), None)
+                or next((x for x in ids if oblast(x) == "UA80"), None)
+                or ids[0])
 
     def oblique_adj(self, tok: str, scope: Optional[set[str]]) -> Optional[tuple]:
         """"у Кам'янському" / "від Покровського": a town with an adjectival name (Кам'янське, Покровське), else a raion
@@ -408,12 +430,23 @@ class Parser:
             if (tok[:1].isupper() and OBLAST_ADJ_TOK.search(low) and j + 1 < len(toks)
                     and norm(toks[j + 1]).startswith("обл")):
                 i = j + 2; continue
-            # raion by adjective: "Броварському районі" / "Шевченківський р-н" — same-named ones resolved below
-            if tok[:1].isupper() and i + 1 < len(toks) and norm(toks[i + 1]).startswith(("район", "р-н")):
-                ids = self.g.raion_adj.get(adj_stem(tok), [])
-                if ids:
-                    after = toks[i + 2] if i + 2 < len(toks) else ""
-                    out.append(((tuple(ids), after), role, tok + " район")); i += 2; continue
+            # raion by adjective: "Броварському районі", "Шевченківський р-н", and coordinated runs that end in the
+            # plural ("у Дніпровському та Деснянському районах", "через Броварський, Бориспільський райони" — commas
+            # aren't tokens); same-named ones are resolved below
+            if tok[:1].isupper() and self.g.raion_adj.get(adj_stem(tok)):
+                chain, j = [tok], i
+                while j + 1 < len(toks) and not norm(toks[j + 1]).startswith(("район", "р-н")):
+                    k = j + 2 if norm(toks[j + 1]) in ("та", "і", "й", "/") else j + 1
+                    if k >= len(toks) or not toks[k][:1].isupper() or not self.g.raion_adj.get(adj_stem(toks[k])):
+                        break
+                    chain.append(toks[k])
+                    j = k
+                if j + 1 < len(toks) and norm(toks[j + 1]).startswith(("район", "р-н")):
+                    after = toks[j + 2] if j + 2 < len(toks) else ""
+                    for t in chain:
+                        out.append(((tuple(self.g.raion_adj[adj_stem(t)]), after), role, t + " район"))
+                    i = j + 2
+                    continue
             # settlement: try 3,2,1-word capitalised n-grams. A STOP word may still open a longer name ("Нова Одеса",
             # "Нові Санжари"): only the bare 1-word gram is refused, so "Нова" never falls through to "Одеса"
             if tok[:1].isupper():
@@ -422,14 +455,16 @@ class Parser:
                     if i + n > len(toks) or (n == 1 and low in STOP):
                         continue
                     gram = toks[i:i + n]
-                    if not all(g[:1].isupper() for g in gram):
-                        continue
                     if any(norm(g) in STOP for g in gram[1:]):
+                        continue
+                    # a lowercase later word ("Холодна гора", "Весела дача") may only complete a neighbourhood alias
+                    keep = None if all(g[:1].isupper() for g in gram) else (lambda c: c[0] == 5)
+                    if keep and not all(g[:1].isalpha() for g in gram):
                         continue
                     if n == 1:
                         hit = self.oblique_adj(tok, scope)
                     for key in ([] if hit else _product([stem_variants(g) for g in gram])):
-                        hit = self.g.lookup(" ".join(key), scope)
+                        hit = self.g.lookup(" ".join(key), scope, keep=keep, far=role == "target")
                         if hit:
                             break
                     if hit:
@@ -441,9 +476,11 @@ class Parser:
             i += 1
         # same-named raions / city districts: decided once every city named on the line is known
         cities = {rid for rid, _, _ in out if isinstance(rid, str) and rid in self.g.city_districts}
-        cities |= {self.g.raions[rid].get("city_id") for rid, _, _ in out if isinstance(rid, str) and rid in self.g.raions}
-        return [(self.pick_raion(list(rid[0]), rid[1], scope, cities) if isinstance(rid, tuple) else rid, role, name)
-                for rid, role, name in out]
+        cities |= {self.g.raions[rid]["city_id"] for rid, _, _ in out
+                   if isinstance(rid, str) and self.g.raions.get(rid, {}).get("city_id")}
+        resolved = [(self.pick_raion(list(rid[0]), rid[1], scope, cities) if isinstance(rid, tuple) else rid, role, name)
+                    for rid, role, name in out]
+        return [h for h in resolved if h[0] is not None]
 
     # -- main
     def parse(self, msg_id: int, ts: str, text: str) -> list[Event]:
@@ -451,7 +488,10 @@ class Parser:
         if not text or IGNORE_RX.search(norm(text)):
             return []
         scope, default, rest = self.header(text)
-        head_oblasts = self.oblasts_in(text[: len(text) - len(rest)])  # oblasts the header itself names
+        head = text[: len(text) - len(rest)]
+        head_oblasts = self.oblasts_in(head)  # oblasts the header itself names
+        if default and scope and re.search(r"\bобласт", norm(head)):  # "Київ та область:" names the city's oblast too
+            head_oblasts = sorted(set(head_oblasts) | {CITY_OBLAST.get(c, c) for c in scope})
         events: list[Event] = []
         for line in re.split(r"[\n.;]+|(?=\s*[🅿⚠🔄💣☄❗‼])", rest):
             line = line.strip()
@@ -459,16 +499,20 @@ class Parser:
                 continue
             if CLEAR_RX.search(norm(line)):
                 targets: set[str] = set()
-                named = self.places_in_line(line, scope)
-                if re.search(r"\bкиїв\b|\bкиєв", norm(line)):
+                # what is cleared is named up to the clear word: in "чисто, 1х реактив від Славутича" the rest is a remark
+                segs = line.split(",")
+                k = next((n for n, sg in enumerate(segs) if CLEAR_RX.search(norm(sg))), len(segs) - 1)
+                subject = ",".join(segs[:k + 1])
+                named = self.places_in_line(subject, scope)
+                if re.search(r"\bкиїв\b|\bкиєв", norm(subject)):
                     targets.update(self.g.city_districts[KYIV])
                 if default:
                     targets.update(self.g.city_districts.get(default) or [default])
                 # an oblast named on the line wins; else, if the line names no place ("Київщина:\nчисто"), the
                 # header's oblasts — under a city header ("Одеса:") only those the header itself names
-                for code in self.oblasts_in(line) or ([] if named else head_oblasts if default else sorted(scope or [])):
+                for code in self.oblasts_in(subject) or ([] if named else head_oblasts if default else sorted(scope or [])):
                     targets.update(self.g.by_oblast.get(code, []))
-                mo = CITY_AND_OBLAST_RX.search(line)
+                mo = CITY_AND_OBLAST_RX.search(subject)
                 city = self.places_in_line(mo.group(1), scope) if mo else []
                 if city:  # "Миколаїв та область - відбій" -> every raion of the oblast holding that city
                     code = self.g.raions[city[-1][0]]["oblast"] if city[-1][0] in self.g.raions else city[-1][0][:4]
